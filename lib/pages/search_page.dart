@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:bnbscout24/constants/sizes.dart';
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
+  @override
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  @override
+  Widget build(BuildContext context) {
+    Sizes().initialize(context);
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Text("SEARCH"),
+        )
+      )
+    );
+  }
+}

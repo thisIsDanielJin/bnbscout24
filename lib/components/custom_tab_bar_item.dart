@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CustomTabBarItem {
   Widget page;
-  String name; 
+  Widget tab_widget; 
 
   CustomTabBarItem({
-    required this.page,  required this.name
+    required this.page,  required this.tab_widget
   });
 }

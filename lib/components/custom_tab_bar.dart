@@ -2,9 +2,9 @@ import 'package:bnbscout24/components/custom_tab_bar_item.dart';
 import 'package:flutter/material.dart';
 
 class CustomTabBar extends StatefulWidget {
-  List<CustomTabBarItem> items;
+  final List<CustomTabBarItem> items;
 
-  CustomTabBar({super.key, required this.items});
+  const CustomTabBar({super.key, required this.items});
 
   @override
   _CustomTabBarState createState() => _CustomTabBarState();
@@ -61,7 +61,7 @@ class _CustomTabBarState extends State<CustomTabBar>
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.black,
                 tabs: 
-                  widget.items.map((i) => Tab(text: i.name)).toList()
+                  widget.items.map((i) => Tab(child: i.tab_widget)).toList()
                 ,
               ),
             ),

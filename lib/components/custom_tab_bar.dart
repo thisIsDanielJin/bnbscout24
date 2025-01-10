@@ -1,4 +1,6 @@
 import 'package:bnbscout24/components/custom_tab_bar_item.dart';
+import 'package:bnbscout24/constants/constants.dart';
+import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
 class CustomTabBar extends StatefulWidget {
@@ -28,6 +30,7 @@ class _CustomTabBarState extends State<CustomTabBar>
 
   @override
   Widget build(BuildContext context) {
+    Sizes().initialize(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -42,26 +45,37 @@ class _CustomTabBarState extends State<CustomTabBar>
             ),
             // give the tab bar a height [can change hheight to preferred height]
             Container(
-              height: 45,
+              height: 48,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: darkGrey,
                 borderRadius: BorderRadius.circular(
                   25.0,
                 ),
               ),
+
               child: TabBar(
                 controller: _tabController,
                 // give the indicator a decoration (color and border radius)
                 indicator: BoxDecoration(
+                  
                   borderRadius: BorderRadius.circular(
                     25.0,
                   ),
-                  color: Colors.green,
+                  color: white,
+                  
                 ),
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.black,
+                overlayColor: WidgetStateProperty.all(Colors.transparent),
+                dividerHeight: 0,
+                labelColor: darkGrey,
+                unselectedLabelColor: white,
                 tabs: 
-                  widget.items.map((i) => Tab(child: i.tab_widget)).toList()
+                  widget.items.asMap().map((idx, i) => MapEntry(idx, Tab(child: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: i.tab_widget,
+                    ),
+                  )))).values.toList()
                 ,
               ),
             ),

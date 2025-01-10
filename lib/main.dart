@@ -18,7 +18,7 @@ void main() {
         CustomTabBarItem(page: SearchPage(), tab_widget: FaIcon(FontAwesomeIcons.magnifyingGlass)),
         CustomTabBarItem(page: PropertiesPage(), tab_widget: FaIcon(FontAwesomeIcons.house)),
         CustomTabBarItem(page: ConversationsPage(), tab_widget: FaIcon(FontAwesomeIcons.inbox)),
-        CustomTabBarItem(page: ProfilePage(), tab_widget: FaIcon(FontAwesomeIcons.person)),
+        CustomTabBarItem(page: ProfilePage(), tab_widget: FaIcon(FontAwesomeIcons.user)),
 
 
       ],

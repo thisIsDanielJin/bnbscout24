@@ -1,5 +1,5 @@
-import 'package:bnbscout24/components/tab_bar.dart';
-import 'package:bnbscout24/components/tab_bar_item.dart';
+import 'package:bnbscout24/components/custom_tab_bar.dart';
+import 'package:bnbscout24/components/custom_tab_bar_item.dart';
 import 'package:bnbscout24/pages/home_page.dart';
 import 'package:bnbscout24/pages/converstations_page.dart';
 import 'package:bnbscout24/pages/profile_page.dart';
@@ -11,13 +11,13 @@ void main() {
 
 
   runApp(MaterialApp(
-    home: Layout(
+    home: CustomTabBar(
       items: [
-        TabBarItem(page: HomePage(), name: "Home"),
-        TabBarItem(page: SearchPage(), name: "Search"),
-        TabBarItem(page: PropertiesPage(), name: "Properties"),
-        TabBarItem(page: ConversationsPage(), name: "Inbox"),
-        TabBarItem(page: ProfilePage(), name: "Profile"),
+        CustomTabBarItem(page: HomePage(), name: "Home"),
+        CustomTabBarItem(page: SearchPage(), name: "Search"),
+        CustomTabBarItem(page: PropertiesPage(), name: "Properties"),
+        CustomTabBarItem(page: ConversationsPage(), name: "Inbox"),
+        CustomTabBarItem(page: ProfilePage(), name: "Profile"),
 
 
       ],

@@ -1,16 +1,16 @@
-import 'package:bnbscout24/components/tab_bar_item.dart';
+import 'package:bnbscout24/components/custom_tab_bar_item.dart';
 import 'package:flutter/material.dart';
 
-class Layout extends StatefulWidget {
-  List<TabBarItem> items;
+class CustomTabBar extends StatefulWidget {
+  List<CustomTabBarItem> items;
 
-  Layout({super.key, required this.items});
+  CustomTabBar({super.key, required this.items});
 
   @override
-  _LayoutState createState() => _LayoutState();
+  _CustomTabBarState createState() => _CustomTabBarState();
 }
 
-class _LayoutState extends State<Layout>
+class _CustomTabBarState extends State<CustomTabBar>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 

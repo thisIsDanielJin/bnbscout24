@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/constants/sizes.dart';
-class InboxPage extends StatefulWidget {
-  const InboxPage({super.key});
+class PropertiesPage extends StatefulWidget {
+  const PropertiesPage({super.key});
 
   @override
-  State<InboxPage> createState() => _InboxPageState();
+  State<PropertiesPage> createState() => _PropertiesPageState();
 }
 
-class _InboxPageState extends State<InboxPage> {
+class _PropertiesPageState extends State<PropertiesPage> {
   @override
   Widget build(BuildContext context) {
     Sizes().initialize(context);
     return SafeArea(
       child: Scaffold(
         body: Center(
-          child: Text("INBOX"),
+          child: Text("PROPERTIES"),
         )
       )
     );

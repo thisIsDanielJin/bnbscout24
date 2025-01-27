@@ -1,3 +1,5 @@
+import 'package:bnbscout24/components/form_input.dart';
+import 'package:bnbscout24/components/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 class HomePage extends StatefulWidget {
@@ -12,8 +14,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Sizes().initialize(context);
     return Container(
-      decoration: BoxDecoration(color: Colors.red),
-      child: Text("HOME")
+      child: FormInput(
+        label: "Hello!",
+        children: 
+        [TextInput()],
+      )
     );
   }
 }

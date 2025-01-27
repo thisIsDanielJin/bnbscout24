@@ -72,13 +72,12 @@ class _CustomTabBarState extends State<CustomTabBar>
               ),
             ),
             // tab bar view here,
-      body: 
-        TabBarView(
+      body: TabBarView(
+            
                 controller: _tabController,
                 children: 
                   widget.items.map((i) => i.page).toList()                
-              )
-      
+              ),
     );
   }
 }

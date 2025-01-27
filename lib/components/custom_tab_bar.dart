@@ -32,24 +32,16 @@ class _CustomTabBarState extends State<CustomTabBar>
   Widget build(BuildContext context) {
     Sizes().initialize(context);
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: 
-                  widget.items.map((i) => i.page).toList()                
-              ),
-            ),
-            // give the tab bar a height [can change hheight to preferred height]
+      extendBody: true,
+      bottomNavigationBar: // give the tab bar a height [can change hheight to preferred height]
             Container(
-              height: 48,
+              height: 64,
+              margin: EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: darkGrey,
                 borderRadius: BorderRadius.circular(
-                  25.0,
+                  32.0,
                 ),
               ),
 
@@ -79,11 +71,14 @@ class _CustomTabBarState extends State<CustomTabBar>
                 ,
               ),
             ),
-            // tab bar view here
-            
-          ],
-        ),
-      ),
+            // tab bar view here,
+      body: 
+        TabBarView(
+                controller: _tabController,
+                children: 
+                  widget.items.map((i) => i.page).toList()                
+              )
+      
     );
   }
 }

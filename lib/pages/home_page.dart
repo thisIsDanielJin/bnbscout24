@@ -11,12 +11,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Sizes().initialize(context);
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
-          child: Text("HOME"),
-        )
-      )
+    return Container(
+      decoration: BoxDecoration(color: Colors.red),
+      child: Text("HOME")
     );
   }
 }

@@ -10,7 +10,6 @@ class PropertiesPage extends StatefulWidget {
 class _PropertiesPageState extends State<PropertiesPage> {
   @override
   Widget build(BuildContext context) {
-    Sizes().initialize(context);
     return SafeArea(
       child: Scaffold(
         body: Center(

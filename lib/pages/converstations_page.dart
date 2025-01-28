@@ -10,7 +10,6 @@ class ConversationsPage extends StatefulWidget {
 class _ConversationsPageState extends State<ConversationsPage> {
   @override
   Widget build(BuildContext context) {
-    Sizes().initialize(context);
     return SafeArea(
       child: Scaffold(
         body: Center(

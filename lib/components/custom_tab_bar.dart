@@ -30,44 +30,43 @@ class _CustomTabBarState extends State<CustomTabBar>
 
   @override
   Widget build(BuildContext context) {
-    Sizes().initialize(context);
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: // give the tab bar a height [can change hheight to preferred height]
             Container(
-              height: 64,
-              margin: EdgeInsets.all(8),
-              padding: EdgeInsets.all(8),
+              margin: EdgeInsets.all(Sizes.navBarMargin),
               decoration: BoxDecoration(
-                color: darkGrey,
+                color: ColorPalette.darkGrey,
                 borderRadius: BorderRadius.circular(
-                  32.0,
+                  Sizes.navBarIconSize + Sizes.navBarIconMargin + Sizes.navBarIconPadding,
                 ),
               ),
 
               child: TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.center,
+                padding: EdgeInsets.all(Sizes.navBarIconMargin),
                 controller: _tabController,
                 // give the indicator a decoration (color and border radius)
                 indicator: BoxDecoration(
                   
                   borderRadius: BorderRadius.circular(
-                    25.0,
+                    Sizes.navBarIconSize,
                   ),
-                  color: white,
+                  color: ColorPalette.white,
                   
                 ),
                 overlayColor: WidgetStateProperty.all(Colors.transparent),
                 dividerHeight: 0,
-                labelColor: darkGrey,
-                unselectedLabelColor: white,
+                labelColor: ColorPalette.darkGrey,
+                unselectedLabelColor: ColorPalette.white,
                 tabs: 
-                  widget.items.asMap().map((idx, i) => MapEntry(idx, Tab(child: SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Center(
-                      child: i.tab_widget,
-                    ),
-                  )))).values.toList()
+                  widget.items.asMap().map((idx, i) => MapEntry(idx, SizedBox(
+                      width: Sizes.navBarIconSize + Sizes.navBarIconPadding,
+                      height: Sizes.navBarIconSize + Sizes.navBarIconPadding,
+                      child: Tab(child: i.tab_widget,),
+                    )
+                    )).values.toList()
                 ,
               ),
             ),

@@ -11,7 +11,7 @@ class HorizontalCard extends StatelessWidget {
   final int networkSpeed;
 
   const HorizontalCard({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.pricePerMonth,
@@ -19,7 +19,7 @@ class HorizontalCard extends StatelessWidget {
     required this.area,
     required this.deskAmount,
     required this.networkSpeed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

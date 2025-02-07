@@ -4,7 +4,6 @@ import 'package:bnbscout24/components/form_input.dart';
 import 'package:bnbscout24/components/text_input.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FilterPage extends StatefulWidget {
   const FilterPage({super.key});
@@ -16,13 +15,22 @@ class FilterPage extends StatefulWidget {
 class _FilterPageState extends State<FilterPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(Sizes.paddingSmall, Sizes.paddingSmall, Sizes.paddingSmall, Sizes.navBarFullSize),
-      child: Column(
-        children: [
-          FormInput(
-            label: "Price", 
-            children: [
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Filter'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Container(
+        padding: EdgeInsets.fromLTRB(Sizes.paddingSmall, Sizes.paddingSmall,
+            Sizes.paddingSmall, Sizes.navBarFullSize),
+        child: Column(
+          children: [
+            FormInput(
+              label: "Price",
+              children: [
                 TextInput(
                   suffixIcon: Icon(Icons.euro),
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -34,10 +42,10 @@ class _FilterPageState extends State<FilterPage> {
                   hint: "Max.",
                 )
               ],
-          ),
-           FormInput(
-            label: "Area", 
-            children: [
+            ),
+            FormInput(
+              label: "Area",
+              children: [
                 TextInput(
                   suffixIcon: Icon(Icons.square_foot),
                   keyboardType: TextInputType.numberWithOptions(),
@@ -49,10 +57,10 @@ class _FilterPageState extends State<FilterPage> {
                   hint: "Max.",
                 )
               ],
-          ),
-          FormInput(
-            label: "Availability", 
-            children: [
+            ),
+            FormInput(
+              label: "Availability",
+              children: [
                 DateInput(
                   initialDate: DateTime.now(),
                   firstDate: DateTime.now(),
@@ -63,17 +71,15 @@ class _FilterPageState extends State<FilterPage> {
                   lastDate: DateTime.now().add(const Duration(days: 30 * 24)),
                 )
               ],
-          ),
-          Spacer(),
-          SizedBox(
-              width: double.infinity,
-              child: PrimaryButton(text: "Apply", onPressed: () => print("HEO"))
             ),
-          
-          
-          
-        ],
-    ))
-    ; 
+            Spacer(),
+            SizedBox(
+                width: double.infinity,
+                child: PrimaryButton(
+                    text: "Apply", onPressed: () => print("HEO"))),
+          ],
+        ),
+      ),
+    );
   }
 }

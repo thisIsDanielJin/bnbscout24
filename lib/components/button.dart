@@ -1,7 +1,6 @@
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;

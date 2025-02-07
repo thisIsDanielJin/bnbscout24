@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bnbscout24/constants/sizes.dart';
 
 class ConversationsPage extends StatefulWidget {
   const ConversationsPage({super.key});

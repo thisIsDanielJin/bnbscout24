@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bnbscout24/components/office_result_card.dart';
+import 'package:bnbscout24/pages/filter_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -30,16 +32,12 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _loadCardData() async {
     try {
-      print('Starting to load card data...');
       final String response =
           await rootBundle.loadString('assets/main_card_data.json');
-      print('Response loaded: $response');
       final List<dynamic> data = json.decode(response);
-      print('Data decoded: $data');
       setState(() {
         cardData = data;
       });
-      print('Card data set: $cardData');
     } catch (e) {
       print('Error loading card data: $e');
     }
@@ -57,12 +55,28 @@ class _SearchPageState extends State<SearchPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Search',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Search',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const FaIcon(FontAwesomeIcons.sliders),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FilterPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Row(

@@ -89,9 +89,29 @@ class _FilterPageState extends State<FilterPage> {
   
 
     return Container(
-      padding: EdgeInsets.fromLTRB(Sizes.paddingSmall, Sizes.paddingSmall, Sizes.paddingSmall, Sizes.navBarFullSize),
+      padding: EdgeInsets.fromLTRB(Sizes.paddingRegular, Sizes.paddingRegular, Sizes.paddingRegular, Sizes.navBarFullSize),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            spacing: Sizes.paddingSmall,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () { 
+                  Navigator.pop(context);
+                 },
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: Sizes.paddingBig),
+                child: Text(
+                  "Filter",
+                  style: TextStyle(
+                      fontSize: Sizes.textSizeBig, fontWeight: FontWeight.bold),
+                )),
+            ]
+          ),
+          
           FormInput(
             label: "Price", 
             children: [

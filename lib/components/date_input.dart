@@ -1,4 +1,4 @@
-import 'package:bnbscout24/components/text_input.dart';
+import 'package:bnbscout24/components/custom_text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For formatting dates
 
@@ -23,14 +23,6 @@ class DateInput extends StatefulWidget {
 class _DateInputState extends State<DateInput> {
   final TextEditingController _controller = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initialDate != null) {
-      _controller.text = DateFormat.yMMMd().format(widget.initialDate!);
-    }
-  }
-
   void _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -52,10 +44,15 @@ class _DateInputState extends State<DateInput> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.initialDate != null) {
+      _controller.text = DateFormat.yMMMd().format(widget.initialDate!);
+    }
+
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: AbsorbPointer( // Prevents manual typing
-        child: TextInput(
+        child: CustomTextInput(
+          hint: "Date",
           controller: _controller,
           suffixIcon: Icon(Icons.calendar_today),
           readOnly: true, // Ensures the user cannot type into the field

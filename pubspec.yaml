@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   font_awesome_flutter: ^10.8.0
   floating_tabbar: ^1.0.3
+  shared_preferences: ^2.5.1
 
 dev_dependencies:
   flutter_test:

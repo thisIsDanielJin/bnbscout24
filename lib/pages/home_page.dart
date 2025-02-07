@@ -1,5 +1,6 @@
 import 'package:bnbscout24/components/form_input.dart';
-import 'package:bnbscout24/components/text_input.dart';
+import 'package:bnbscout24/components/custom_text_input.dart';
+import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,10 +13,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: FormInput(
-        label: "Hello!",
-        children: 
-        [TextInput()],
+      padding: EdgeInsets.fromLTRB(0, Sizes.paddingBig, 0, 0),
+      child: Column(
+  
+        children: [
+          Text("Home")
+        ],
       )
     );
   }

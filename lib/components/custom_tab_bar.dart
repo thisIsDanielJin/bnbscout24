@@ -1,4 +1,6 @@
 import 'package:bnbscout24/components/custom_tab_bar_item.dart';
+import 'package:bnbscout24/constants/constants.dart';
+import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
 class CustomTabBar extends StatefulWidget {
@@ -29,47 +31,52 @@ class _CustomTabBarState extends State<CustomTabBar>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: TabBarView(
+      extendBody: true,
+      bottomNavigationBar: // give the tab bar a height [can change hheight to preferred height]
+            Container(
+              margin: EdgeInsets.all(Sizes.navBarMargin),
+              decoration: BoxDecoration(
+                color: ColorPalette.darkGrey,
+                borderRadius: BorderRadius.circular(
+                  Sizes.navBarIconSize + Sizes.navBarIconMargin + Sizes.navBarIconPadding,
+                ),
+              ),
+
+              child: TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.center,
+                padding: EdgeInsets.all(Sizes.navBarIconMargin),
+                controller: _tabController,
+                // give the indicator a decoration (color and border radius)
+                indicator: BoxDecoration(
+                  
+                  borderRadius: BorderRadius.circular(
+                    Sizes.navBarIconSize,
+                  ),
+                  color: ColorPalette.white,
+                  
+                ),
+                overlayColor: WidgetStateProperty.all(Colors.transparent),
+                dividerHeight: 0,
+                labelColor: ColorPalette.darkGrey,
+                unselectedLabelColor: ColorPalette.white,
+                tabs: 
+                  widget.items.asMap().map((idx, i) => MapEntry(idx, SizedBox(
+                      width: Sizes.navBarIconSize + Sizes.navBarIconPadding,
+                      height: Sizes.navBarIconSize + Sizes.navBarIconPadding,
+                      child: Tab(child: i.tab_widget,),
+                    )
+                    )).values.toList()
+                ,
+              ),
+            ),
+            // tab bar view here,
+      body: TabBarView(
+            
                 controller: _tabController,
                 children: 
                   widget.items.map((i) => i.page).toList()                
               ),
-            ),
-            // give the tab bar a height [can change hheight to preferred height]
-            Container(
-              height: 45,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(
-                  25.0,
-                ),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                // give the indicator a decoration (color and border radius)
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    25.0,
-                  ),
-                  color: Colors.green,
-                ),
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.black,
-                tabs: 
-                  widget.items.map((i) => Tab(child: i.tab_widget)).toList()
-                ,
-              ),
-            ),
-            // tab bar view here
-            
-          ],
-        ),
-      ),
     );
   }
 }

@@ -13,17 +13,8 @@ class _ConversationsPageState extends State<ConversationsPage> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            body: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-            padding: EdgeInsets.symmetric(vertical: Sizes.paddingBig),
-            child: Text(
-              "Profile Settings",
-              style: TextStyle(
-                  fontSize: Sizes.textSizeBig, fontWeight: FontWeight.bold),
-            )),
-      ],
+            body: Center(
+      child: Text("INBOX"),
     )));
   }
 }

@@ -13,6 +13,8 @@ class _ConversationPageState extends State<ConversationPage> {
   @override
   Widget build(BuildContext context) {
 
-    return Text(widget.messageId);
+    return Scaffold(
+      body: Text(widget.messageId)
+    );
   }
 }

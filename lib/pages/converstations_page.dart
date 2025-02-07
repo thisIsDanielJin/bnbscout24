@@ -32,6 +32,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                   imageUrl: "https://picsum.photos/250?image=9",
                   title: "Message 1",
                   description: "dweiaojkm asiodk asi fkma opsakdlf,",
+                  isNew: true,
                 ),
                 ConversationItem(
                   imageUrl: "https://picsum.photos/250?image=10",

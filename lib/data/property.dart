@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:bnbscout24/api/client.dart';
+import 'package:bnbscout24/utils/snackbar_service.dart';
 
 final String DB_ID = '6780faa636107ddbb899';
 final String COLLECTION_ID = '6780fb97607609a113df';
@@ -50,37 +51,58 @@ class Property {
   }
 
   //TODO: move the following functions out of class?
+  //TODO: maybe make use of snackbar optional and return error object instead
 
-  static Future<List<Property>> listProperties() async {
-    List<Property> properties = [];
-    var result = await ApiClient.database
-        .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID);
+  static Future<List<Property>?> listProperties() async {
+    try {
+      List<Property> properties = [];
+      var result = await ApiClient.database
+          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID);
 
-    properties
-        .addAll(result.documents.map((doc) => Property.fromJson(doc.data)));
+      properties
+          .addAll(result.documents.map((doc) => Property.fromJson(doc.data)));
 
-    return properties;
+      return properties;
+    } catch (error) {
+      if (error is AppwriteException) {
+        SnackbarService.showError('${error.message} (${error.code})');
+      }
+      return null;
+    }
   }
 
-  static Future<Property> getPropertyById(String propertyId) async {
-    var result = await ApiClient.database.getDocument(
-        databaseId: DB_ID, collectionId: COLLECTION_ID, documentId: propertyId);
-
-    return Property.fromJson(result.data);
+  static Future<Property?> getPropertyById(String propertyId) async {
+    try {
+      var result = await ApiClient.database.getDocument(
+          databaseId: DB_ID,
+          collectionId: COLLECTION_ID,
+          documentId: propertyId);
+      return Property.fromJson(result.data);
+    } catch (error) {
+      if (error is AppwriteException) {
+        SnackbarService.showError('${error.message} (${error.code})');
+      }
+      return null;
+    }
   }
 
-  static Future<Property> createProperty(Property newProperty) async {
-    var result = await ApiClient.database.createDocument(
-        databaseId: DB_ID,
-        collectionId: COLLECTION_ID,
-        documentId: newProperty.id,
-        data: Property.toJson(newProperty));
-
-    // TODO: what happens if request isn't successful? -> catch error and show snackbar?
-    return Property.fromJson(result.data);
+  static Future<Property?> createProperty(Property newProperty) async {
+    try {
+      var result = await ApiClient.database.createDocument(
+          databaseId: DB_ID,
+          collectionId: COLLECTION_ID,
+          documentId: newProperty.id,
+          data: Property.toJson(newProperty));
+      return Property.fromJson(result.data);
+    } catch (error) {
+      if (error is AppwriteException) {
+        SnackbarService.showError('${error.message} (${error.code})');
+      }
+      return null;
+    }
   }
 
-  static Future<Property> updateProperty(
+  static Future<Property?> updateProperty(
     String propertyId, {
     String? name,
     String? userId,
@@ -90,27 +112,45 @@ class Property {
     int? zipCode,
     List<String>? pictureIds,
   }) async {
-    //TODO: optimize this
-    var updateJson = {};
-    if (name != null) updateJson['name'] = name;
-    if (userId != null) updateJson['userId'] = userId;
-    if (description != null) updateJson['description'] = description;
-    if (street != null) updateJson['street'] = street;
-    if (city != null) updateJson['city'] = city;
-    if (zipCode != null) updateJson['zipCode'] = zipCode;
-    if (pictureIds != null) updateJson['pictureIds'] = pictureIds;
+    try {
+      //TODO: optimize this
+      var updateJson = {};
+      if (name != null) updateJson['name'] = name;
+      if (userId != null) updateJson['userId'] = userId;
+      if (description != null) updateJson['description'] = description;
+      if (street != null) updateJson['street'] = street;
+      if (city != null) updateJson['city'] = city;
+      if (zipCode != null) updateJson['zipCode'] = zipCode;
+      if (pictureIds != null) updateJson['pictureIds'] = pictureIds;
 
-    var result = await ApiClient.database.updateDocument(
-        databaseId: DB_ID,
-        collectionId: COLLECTION_ID,
-        documentId: propertyId,
-        data: updateJson);
+      var result = await ApiClient.database.updateDocument(
+          databaseId: DB_ID,
+          collectionId: COLLECTION_ID,
+          documentId: propertyId,
+          data: updateJson);
 
-    return Property.fromJson(result.data);
+      return Property.fromJson(result.data);
+    } catch (error) {
+      if (error is AppwriteException) {
+        SnackbarService.showError('${error.message} (${error.code})');
+      }
+      return null;
+    }
   }
 
-  static void deleteProperty(String propertyId) async {
-    var result = await ApiClient.database.deleteDocument(
-        databaseId: DB_ID, collectionId: COLLECTION_ID, documentId: propertyId);
+  static Future<bool> deleteProperty(String propertyId) async {
+    try {
+      //TODO: delete files associated with property
+      await ApiClient.database.deleteDocument(
+          databaseId: DB_ID,
+          collectionId: COLLECTION_ID,
+          documentId: propertyId);
+      return true;
+    } catch (error) {
+      if (error is AppwriteException) {
+        SnackbarService.showError('${error.message} (${error.code})');
+      }
+      return false;
+    }
   }
 }

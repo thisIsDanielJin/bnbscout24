@@ -2,8 +2,13 @@ import 'package:appwrite/appwrite.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
 
+//TODO: move this into env?
+final String BASE_URL = 'https://god-did.de';
+final String PROJECT_ID = '6780ee1a896fed0b8da7';
 final String DB_ID = '6780faa636107ddbb899';
+//these are only valid for property objects/files
 final String COLLECTION_ID = '6780fb97607609a113df';
+final String BUCKET_ID = '67a5d2f8f0ec7c4b941c';
 
 class Property {
   final String id;
@@ -27,6 +32,8 @@ class Property {
       : id = id ?? ID.unique();
 
   static fromJson(Map<String, dynamic> json) {
+    print(json['pictureIds']);
+    print(json['pictureIds'].cast<String>());
     return Property(
         name: json['name'],
         userId: json['userId'],
@@ -49,6 +56,15 @@ class Property {
     json['pictureIds'] = property.pictureIds;
     return json;
   }
+
+  static List<String> generateImageUrls(Property property) {
+    return property.pictureIds
+        .map((id) =>
+            "$BASE_URL/v1/storage/buckets/$BUCKET_ID/files/$id/view?project=$PROJECT_ID")
+        .toList();
+  }
+
+  //TODO: uploadImage function
 
   //TODO: move the following functions out of class?
   //TODO: maybe make use of snackbar optional and return error object instead

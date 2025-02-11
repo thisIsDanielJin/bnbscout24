@@ -2,9 +2,8 @@ import 'package:bnbscout24/components/custom_tab_bar.dart';
 import 'package:bnbscout24/components/custom_tab_bar_item.dart';
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/constants/sizes.dart';
-import 'package:bnbscout24/pages/filter_page.dart';
+import 'package:bnbscout24/pages/conversations_page.dart';
 import 'package:bnbscout24/pages/home_page.dart';
-import 'package:bnbscout24/pages/converstations_page.dart';
 import 'package:bnbscout24/pages/profile_page.dart';
 import 'package:bnbscout24/pages/properties_page.dart';
 import 'package:bnbscout24/pages/search_page.dart';
@@ -21,7 +20,7 @@ void main() {
       home: CustomTabBar(
         items: [
           CustomTabBarItem(
-              page: FilterPage(),
+              page: HomePage(),
               tab_widget:
                   FaIcon(FontAwesomeIcons.map, size: Sizes.navBarIconSize)),
           CustomTabBarItem(

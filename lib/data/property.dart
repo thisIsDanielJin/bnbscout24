@@ -64,7 +64,24 @@ class Property {
         .toList();
   }
 
-  //TODO: uploadImage function
+  //TODO: test this and adapt if necessary. not sure if it works.
+  //TODO: decide if InputFile.fromPath or InputFile.fromBytes is supposed to be used
+  static Future<String?> uploadImage(String imagePath) async {
+    try {
+      var result = await ApiClient.storage.createFile(
+        bucketId: BUCKET_ID,
+        fileId: ID.unique(),
+        file: InputFile.fromPath(path: imagePath),
+      );
+
+      return result.$id;
+    } catch (error) {
+      if (error is AppwriteException) {
+        SnackbarService.showError('${error.message} (${error.code})');
+      }
+      return null;
+    }
+  }
 
   //TODO: move the following functions out of class?
   //TODO: maybe make use of snackbar optional and return error object instead

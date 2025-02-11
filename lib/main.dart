@@ -10,25 +10,36 @@ import 'package:bnbscout24/pages/properties_page.dart';
 import 'package:bnbscout24/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:bnbscout24/utils/snackbar_service.dart';
 
 void main() {
-
-
   runApp(MaterialApp(
-    theme: ThemeData(
-      scaffoldBackgroundColor: ColorPalette.white,
-      
-    ),
-    home: CustomTabBar(
-      items: [
-        CustomTabBarItem(page: FilterPage(), tab_widget: FaIcon(FontAwesomeIcons.map, size: Sizes.navBarIconSize)),
-        CustomTabBarItem(page: SearchPage(), tab_widget: FaIcon(FontAwesomeIcons.magnifyingGlass, size: Sizes.navBarIconSize)),
-        CustomTabBarItem(page: PropertiesPage(), tab_widget: FaIcon(FontAwesomeIcons.house, size: Sizes.navBarIconSize)),
-        CustomTabBarItem(page: ConversationsPage(), tab_widget: FaIcon(FontAwesomeIcons.inbox, size: Sizes.navBarIconSize)),
-        CustomTabBarItem(page: ProfilePage(), tab_widget: FaIcon(FontAwesomeIcons.user, size: Sizes.navBarIconSize)),
-
-
-      ],
-    )
-  ));
+      scaffoldMessengerKey: SnackbarService.scaffoldMessengerKey,
+      theme: ThemeData(
+        scaffoldBackgroundColor: ColorPalette.white,
+      ),
+      home: CustomTabBar(
+        items: [
+          CustomTabBarItem(
+              page: FilterPage(),
+              tab_widget:
+                  FaIcon(FontAwesomeIcons.map, size: Sizes.navBarIconSize)),
+          CustomTabBarItem(
+              page: SearchPage(),
+              tab_widget: FaIcon(FontAwesomeIcons.magnifyingGlass,
+                  size: Sizes.navBarIconSize)),
+          CustomTabBarItem(
+              page: PropertiesPage(),
+              tab_widget:
+                  FaIcon(FontAwesomeIcons.house, size: Sizes.navBarIconSize)),
+          CustomTabBarItem(
+              page: ConversationsPage(),
+              tab_widget:
+                  FaIcon(FontAwesomeIcons.inbox, size: Sizes.navBarIconSize)),
+          CustomTabBarItem(
+              page: ProfilePage(),
+              tab_widget:
+                  FaIcon(FontAwesomeIcons.user, size: Sizes.navBarIconSize)),
+        ],
+      )));
 }

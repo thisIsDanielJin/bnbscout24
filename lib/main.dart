@@ -9,9 +9,11 @@ import 'package:bnbscout24/pages/properties_page.dart';
 import 'package:bnbscout24/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:bnbscout24/utils/snackbar_service.dart';
 
 void main() {
   runApp(MaterialApp(
+      scaffoldMessengerKey: SnackbarService.scaffoldMessengerKey,
       theme: ThemeData(
         scaffoldBackgroundColor: ColorPalette.white,
       ),

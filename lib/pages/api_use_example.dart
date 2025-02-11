@@ -3,7 +3,7 @@ import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/data/property.dart';
 
 class ApiUseExamplePage extends StatefulWidget {
-  late Future<List<Property>> properties;
+  late Future<List<Property>?> properties;
 
   ApiUseExamplePage({super.key});
 
@@ -15,7 +15,7 @@ class _ApiUseExamplePageState extends State<ApiUseExamplePage> {
   @override
   void initState() {
     super.initState();
-    widget.properties = Property.listProperties();
+    widget.properties = Property.listProperties().then((props) => props ?? []);
   }
 
   @override

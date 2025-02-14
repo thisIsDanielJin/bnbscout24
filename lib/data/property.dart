@@ -19,6 +19,7 @@ class Property {
   final String city;
   final int zipCode;
   final List<String> pictureIds;
+  final double rentPerDay;
 
   Property(
       {required this.name,
@@ -28,12 +29,11 @@ class Property {
       required this.city,
       required this.zipCode,
       required this.pictureIds,
+      required this.rentPerDay,
       String? id})
       : id = id ?? ID.unique();
 
   static fromJson(Map<String, dynamic> json) {
-    print(json['pictureIds']);
-    print(json['pictureIds'].cast<String>());
     return Property(
         name: json['name'],
         userId: json['userId'],
@@ -42,6 +42,7 @@ class Property {
         city: json['city'],
         zipCode: json['zipCode'],
         pictureIds: json['pictureIds'].cast<String>(),
+        rentPerDay: json['rentPerDay'],
         id: json['\$id']);
   }
 
@@ -54,6 +55,7 @@ class Property {
     json['city'] = property.city;
     json['zipCode'] = property.zipCode;
     json['pictureIds'] = property.pictureIds;
+    json['rentPerDay'] = property.rentPerDay;
     return json;
   }
 
@@ -144,6 +146,7 @@ class Property {
     String? city,
     int? zipCode,
     List<String>? pictureIds,
+    double? rentPerDay,
   }) async {
     try {
       //TODO: optimize this
@@ -155,6 +158,7 @@ class Property {
       if (city != null) updateJson['city'] = city;
       if (zipCode != null) updateJson['zipCode'] = zipCode;
       if (pictureIds != null) updateJson['pictureIds'] = pictureIds;
+      if (rentPerDay != null) updateJson['rentPerDay'] = rentPerDay;
 
       var result = await ApiClient.database.updateDocument(
           databaseId: DB_ID,

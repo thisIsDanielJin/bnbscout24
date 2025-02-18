@@ -20,6 +20,9 @@ class Property {
   final int zipCode;
   final List<String> pictureIds;
   final double rentPerDay;
+  final double squareMetres;
+  final int roomAmount;
+  final double mbitPerSecond;
 
   Property(
       {required this.name,
@@ -30,6 +33,9 @@ class Property {
       required this.zipCode,
       required this.pictureIds,
       required this.rentPerDay,
+      required this.squareMetres,
+      required this.roomAmount,
+      required this.mbitPerSecond,
       String? id})
       : id = id ?? ID.unique();
 
@@ -37,12 +43,15 @@ class Property {
     return Property(
         name: json['name'],
         userId: json['userId'],
-        description: json['description'],
+        description: json['description'] ?? "",
         street: json['street'],
         city: json['city'],
         zipCode: json['zipCode'],
         pictureIds: json['pictureIds'].cast<String>(),
-        rentPerDay: json['rentPerDay'],
+        rentPerDay: json['rentPerDay'].toDouble(),
+        squareMetres: json['squareMetres'].toDouble(),
+        roomAmount: json['roomAmount'],
+        mbitPerSecond: json['mbitPerSecond']?.toDouble() ?? 0,
         id: json['\$id']);
   }
 
@@ -56,6 +65,9 @@ class Property {
     json['zipCode'] = property.zipCode;
     json['pictureIds'] = property.pictureIds;
     json['rentPerDay'] = property.rentPerDay;
+    json['squareMetres'] = property.squareMetres;
+    json['roomAmount'] = property.roomAmount;
+    json['mbitPerSecond'] = property.mbitPerSecond;
     return json;
   }
 
@@ -137,17 +149,18 @@ class Property {
     }
   }
 
-  static Future<Property?> updateProperty(
-    String propertyId, {
-    String? name,
-    String? userId,
-    String? description,
-    String? street,
-    String? city,
-    int? zipCode,
-    List<String>? pictureIds,
-    double? rentPerDay,
-  }) async {
+  static Future<Property?> updateProperty(String propertyId,
+      {String? name,
+      String? userId,
+      String? description,
+      String? street,
+      String? city,
+      int? zipCode,
+      List<String>? pictureIds,
+      double? rentPerDay,
+      double? squareMetres,
+      int? roomAmount,
+      double? mbitPerSecond}) async {
     try {
       //TODO: optimize this
       var updateJson = {};
@@ -159,6 +172,9 @@ class Property {
       if (zipCode != null) updateJson['zipCode'] = zipCode;
       if (pictureIds != null) updateJson['pictureIds'] = pictureIds;
       if (rentPerDay != null) updateJson['rentPerDay'] = rentPerDay;
+      if (squareMetres != null) updateJson['squareMetres'] = squareMetres;
+      if (roomAmount != null) updateJson['roomAmount'] = roomAmount;
+      if (mbitPerSecond != null) updateJson['mbitPerSecond'] = mbitPerSecond;
 
       var result = await ApiClient.database.updateDocument(
           databaseId: DB_ID,

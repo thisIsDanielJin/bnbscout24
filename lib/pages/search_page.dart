@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:bnbscout24/components/office_result_card.dart';
 import 'package:bnbscout24/pages/filter_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -17,6 +18,7 @@ class _SearchPageState extends State<SearchPage> {
   List<dynamic> _filteredCardData = [];
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _radiusController = TextEditingController();
+  Position? _currentPosition;
 
   @override
   void initState() {
@@ -46,14 +48,13 @@ class _SearchPageState extends State<SearchPage> {
         _filteredCardData = data; // Initialize filtered data with all data
       });
     } catch (e) {
-      print('Error loading card data: $e');
+      debugPrint('Error loading card data: $e');
     }
   }
 
   void _performSearch() {
     if (_addressController.text.isEmpty) {
       setState(() {
-        // If no search term, show all results
         _filteredCardData = cardData;
       });
       return;
@@ -65,8 +66,28 @@ class _SearchPageState extends State<SearchPage> {
         final title = item['title'].toString().toLowerCase();
         final searchTerm = _addressController.text.toLowerCase();
 
-        // Search in both street name and title
-        return streetName.contains(searchTerm) || title.contains(searchTerm);
+        // Basic text search
+        bool matchesSearch =
+            streetName.contains(searchTerm) || title.contains(searchTerm);
+
+        // Radius check if position and radius are available
+        if (matchesSearch &&
+            _currentPosition != null &&
+            _radiusController.text.isNotEmpty) {
+          final itemLat = item['latitude'] ?? 0.0;
+          final itemLng = item['longitude'] ?? 0.0;
+          final distance = Geolocator.distanceBetween(
+            _currentPosition!.latitude,
+            _currentPosition!.longitude,
+            itemLat,
+            itemLng,
+          );
+          // Convert radius from km to meters
+          final radiusInMeters = double.parse(_radiusController.text) * 1000;
+          return distance <= radiusInMeters;
+        }
+
+        return matchesSearch;
       }).toList();
     });
   }
@@ -140,11 +161,27 @@ class _SearchPageState extends State<SearchPage> {
                               horizontal: 16,
                               vertical: 14,
                             ),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.my_location),
+                              onPressed:
+                                  () {}, // Empty function - button does nothing
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
+                  if (_currentPosition != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Current position: ${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

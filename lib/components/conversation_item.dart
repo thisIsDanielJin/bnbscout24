@@ -18,25 +18,34 @@ class ConversationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
+    // Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => ConversationPage(messageId: title),
+    //     ));
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorPalette.lightGrey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.all(0),
+          elevation: 0, // No shadow
+        ),
+        onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ConversationPage(messageId: title),
-            ));
-      },
-      child: ClipRRect(
-          borderRadius: BorderRadius.circular(Sizes.borderRadius),
-          child: Container(
-            decoration: BoxDecoration(
-              color: ColorPalette.lighterGrey,
-            ),
-            height: 112,
+            )),
+        child: SizedBox(
+            height: 110,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Image.network(imageUrl),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(Sizes.borderRadius),
+                  child: Image.network(imageUrl),
+                ),
                 Expanded(
                   child: Container(
                     padding: EdgeInsets.all(Sizes.paddingRegular),
@@ -46,10 +55,15 @@ class ConversationItem extends StatelessWidget {
                         Text(
                           title,
                           style: TextStyle(
+                              color: ColorPalette.black,
                               fontSize: Sizes.textSizeRegular,
                               fontWeight: FontWeight.bold),
                         ),
-                        Text(description)
+                        Text(description,
+                        style: TextStyle(
+                              color: ColorPalette.darkGrey,
+                              fontSize: Sizes.textSizeSmall),
+                        )
                       ],
                     ),
                   ),
@@ -69,17 +83,22 @@ class ConversationItem extends StatelessWidget {
                             color: ColorPalette.primary,
                             borderRadius:
                                 BorderRadius.circular(Sizes.borderRadiusBig)),
-                        child: Text("new"),
+                        child: Text(
+                          "new",
+                          style: TextStyle(
+                            color: ColorPalette.white
+                          ),
+                        ),
                       ),
                       // Icon(Icons.hide_image, size: 32),
-                      Icon(Icons.arrow_forward_ios, size: 32),
+                      Icon(Icons.arrow_forward_ios, 
+                      size: 32,
+                      color: ColorPalette.black,),
                       Container(height: 24)
                     ],
                   ),
                 )
               ],
-            ),
-          )),
-    );
+            )));
   }
 }

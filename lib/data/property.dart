@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
 
@@ -15,27 +16,30 @@ class Property {
   final String name;
   final String userId;
   final String description;
-  final String street;
-  final String city;
-  final int zipCode;
-  final List<String> pictureIds;
-  final double rentPerDay;
+  final String address;
+  final double geoLat;
+  final double geoLon;
+  final List<String>? pictureIds;
+  final String priceInterval;
+  final int priceIntervalCents;
   final double squareMetres;
   final int roomAmount;
-  final double mbitPerSecond;
+  final double? mbitPerSecond;
+
 
   Property(
       {required this.name,
       required this.userId,
       required this.description,
-      required this.street,
-      required this.city,
-      required this.zipCode,
-      required this.pictureIds,
-      required this.rentPerDay,
+      required this.address,
+      this.pictureIds,
+      required this.priceInterval,
+      required this.priceIntervalCents,
       required this.squareMetres,
       required this.roomAmount,
-      required this.mbitPerSecond,
+      this.mbitPerSecond,
+      required this.geoLat,
+      required this.geoLon,
       String? id})
       : id = id ?? ID.unique();
 
@@ -44,15 +48,17 @@ class Property {
         name: json['name'],
         userId: json['userId'],
         description: json['description'] ?? "",
-        street: json['street'],
-        city: json['city'],
-        zipCode: json['zipCode'],
+        address: json['address'],
         pictureIds: json['pictureIds'].cast<String>(),
-        rentPerDay: json['rentPerDay'].toDouble(),
-        squareMetres: json['squareMetres'].toDouble(),
+        priceInterval: json['priceInterval'],
+        priceIntervalCents: json['priceIntervalCents'],
+        squareMetres: json['squareMetres'],
         roomAmount: json['roomAmount'],
-        mbitPerSecond: json['mbitPerSecond']?.toDouble() ?? 0,
+        mbitPerSecond: json['mbitPerSecond'],
+        geoLat: json['geoLat'],
+        geoLon: json['geoLon'],
         id: json['\$id']);
+        
   }
 
   static Map<String, dynamic> toJson(Property property) {
@@ -60,32 +66,34 @@ class Property {
     json['name'] = property.name;
     json['userId'] = property.userId;
     json['description'] = property.description;
-    json['street'] = property.street;
-    json['city'] = property.city;
-    json['zipCode'] = property.zipCode;
+    json['address'] = property.address;
     json['pictureIds'] = property.pictureIds;
-    json['rentPerDay'] = property.rentPerDay;
+    json['priceInterval'] = property.priceInterval;
+    json['priceIntervalCents'] = property.priceIntervalCents;
+    
     json['squareMetres'] = property.squareMetres;
     json['roomAmount'] = property.roomAmount;
     json['mbitPerSecond'] = property.mbitPerSecond;
+    json['geoLat'] = property.geoLat;
+    json['geoLon'] = property.geoLon;
     return json;
   }
 
-  static List<String> generateImageUrls(Property property) {
+  static List<String>? generateImageUrls(Property property) {
     return property.pictureIds
-        .map((id) =>
+        ?.map((id) =>
             "$BASE_URL/v1/storage/buckets/$BUCKET_ID/files/$id/view?project=$PROJECT_ID")
         .toList();
   }
 
   //TODO: test this and adapt if necessary. not sure if it works.
   //TODO: decide if InputFile.fromPath or InputFile.fromBytes is supposed to be used
-  static Future<String?> uploadImage(String imagePath) async {
+  static Future<String?> uploadImage(List<int> bytes, String filename) async {
     try {
       var result = await ApiClient.storage.createFile(
         bucketId: BUCKET_ID,
         fileId: ID.unique(),
-        file: InputFile.fromPath(path: imagePath),
+        file: InputFile.fromBytes(bytes: bytes, filename: filename),
       );
 
       return result.$id;
@@ -106,14 +114,24 @@ class Property {
       var result = await ApiClient.database
           .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID);
 
-      properties
-          .addAll(result.documents.map((doc) => Property.fromJson(doc.data)));
+      print(result.documents.length);
+      for (Document doc in result.documents) {
+        try {
+          properties.add(Property.fromJson(doc.data));
+        }
+        catch(e) {
+          print("Error parsing doc");
+          print(e);          
+        }
+      }
 
+      print(properties.length);
       return properties;
     } catch (error) {
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');
       }
+      print(error);
       return null;
     }
   }
@@ -153,23 +171,19 @@ class Property {
       {String? name,
       String? userId,
       String? description,
-      String? street,
-      String? city,
-      int? zipCode,
+      String? address,
       List<String>? pictureIds,
       double? rentPerDay,
       double? squareMetres,
       int? roomAmount,
       double? mbitPerSecond}) async {
     try {
-      //TODO: optimize this
+
       var updateJson = {};
       if (name != null) updateJson['name'] = name;
       if (userId != null) updateJson['userId'] = userId;
+      if (address != null) updateJson['address'] = address;
       if (description != null) updateJson['description'] = description;
-      if (street != null) updateJson['street'] = street;
-      if (city != null) updateJson['city'] = city;
-      if (zipCode != null) updateJson['zipCode'] = zipCode;
       if (pictureIds != null) updateJson['pictureIds'] = pictureIds;
       if (rentPerDay != null) updateJson['rentPerDay'] = rentPerDay;
       if (squareMetres != null) updateJson['squareMetres'] = squareMetres;

@@ -1,4 +1,5 @@
 import 'package:bnbscout24/components/button.dart';
+import 'package:bnbscout24/components/custom_dropdown.dart';
 import 'package:bnbscout24/components/date_input.dart';
 import 'package:bnbscout24/components/form_input.dart';
 import 'package:bnbscout24/components/custom_text_input.dart';
@@ -6,9 +7,9 @@ import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FilterPage extends StatefulWidget {
+  static String KEY_PRICE_INTERVAL = "FilterPriceInterval";
   static String KEY_PRICE_MIN = "FilterPriceMin";
   static String KEY_PRICE_MAX = "FilterPriceMax";
 
@@ -18,9 +19,6 @@ class FilterPage extends StatefulWidget {
   static String KEY_FROM_DATE = "FilterFromDate";
   static String KEY_TO_DATE = "FilterToDate";
 
-
-
-
   const FilterPage({super.key});
 
   @override
@@ -28,6 +26,7 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
+  static String priceInterval = "Daily";
   final TextEditingController priceMinController = TextEditingController();
   final TextEditingController priceMaxController = TextEditingController();
 
@@ -46,159 +45,167 @@ class _FilterPageState extends State<FilterPage> {
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
 
-    priceMinController.text = prefs.getDouble(FilterPage.KEY_PRICE_MIN)?.toString() ?? "";
-    priceMaxController.text = prefs.getDouble(FilterPage.KEY_PRICE_MAX)?.toString() ?? "";
+    priceMinController.text =
+        prefs.getDouble(FilterPage.KEY_PRICE_MIN)?.toString() ?? "";
+    priceMaxController.text =
+        prefs.getDouble(FilterPage.KEY_PRICE_MAX)?.toString() ?? "";
 
-    areaMinController.text = prefs.getDouble(FilterPage.KEY_AREA_MIN)?.toString() ?? "";
-    areaMaxController.text = prefs.getDouble(FilterPage.KEY_AREA_MAX)?.toString() ?? "";
+    areaMinController.text =
+        prefs.getDouble(FilterPage.KEY_AREA_MIN)?.toString() ?? "";
+    areaMaxController.text =
+        prefs.getDouble(FilterPage.KEY_AREA_MAX)?.toString() ?? "";
 
     setState(() {
-      
-      fromDate = DateTime.tryParse(prefs.getString(FilterPage.KEY_FROM_DATE) ?? "");
+      priceInterval =
+          prefs.getString(FilterPage.KEY_PRICE_INTERVAL)?.toString() ?? "Daily";
+      fromDate =
+          DateTime.tryParse(prefs.getString(FilterPage.KEY_FROM_DATE) ?? "");
       toDate = DateTime.tryParse(prefs.getString(FilterPage.KEY_TO_DATE) ?? "");
     });
   }
 
-  void addDoubleInputListener(TextEditingController controller, String key) {
-    controller.addListener(() async{
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setDouble(key, double.parse(controller.text));
-    });
 
-    
-  }
 
-  void addDateInput(TextEditingController controller, String key) {
-    controller.addListener(() async{
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setDouble(key, double.parse(controller.text));
-    });
 
-    
+  void applyFilter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString(FilterPage.KEY_PRICE_INTERVAL, priceInterval);
+    prefs.setDouble(FilterPage.KEY_PRICE_MIN, double.parse(priceMinController.text));
+    prefs.setDouble(FilterPage.KEY_PRICE_MAX, double.parse(priceMaxController.text));
+
+    prefs.setDouble(FilterPage.KEY_AREA_MIN, double.parse(areaMinController.text));
+    prefs.setDouble(FilterPage.KEY_AREA_MAX, double.parse(areaMaxController.text));
+
+    if (fromDate != null) {
+      prefs.setString(FilterPage.KEY_FROM_DATE, fromDate!.toIso8601String());
+    }
+
+    if (toDate != null) {
+      prefs.setString(FilterPage.KEY_TO_DATE, toDate!.toIso8601String());
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    addDoubleInputListener(priceMinController, FilterPage.KEY_PRICE_MIN);
-    addDoubleInputListener(priceMaxController, FilterPage.KEY_PRICE_MAX);
 
-    addDoubleInputListener(areaMinController, FilterPage.KEY_AREA_MIN);
-    addDoubleInputListener(areaMaxController, FilterPage.KEY_AREA_MAX);
-
-
-  
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(Sizes.paddingRegular, Sizes.paddingRegular, Sizes.paddingRegular, Sizes.navBarFullSize),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            spacing: Sizes.paddingSmall,
-            children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () { 
-                  Navigator.pop(context);
-                 },
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: Sizes.paddingBig),
-                child: Text(
-                  "Filter",
-                  style: TextStyle(
-                      fontSize: Sizes.textSizeBig, fontWeight: FontWeight.bold),
-                )),
-            ]
-          ),
-          
-          FormInput(
-            label: "Price", 
-            children: [
-                CustomTextInput(
-                  suffixIcon: Icon(Icons.euro),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  hint: "Min.",
-                  controller: priceMinController,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+    return Scaffold(
+        body: Container(
+            padding: EdgeInsets.fromLTRB(
+                Sizes.paddingRegular,
+                Sizes.paddingRegular,
+                Sizes.paddingRegular,
+                Sizes.paddingRegular),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(spacing: Sizes.paddingSmall, children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: Sizes.paddingBig),
+                      child: Text(
+                        "Filter",
+                        style: TextStyle(
+                            fontSize: Sizes.textSizeBig,
+                            fontWeight: FontWeight.bold),
+                      )),
+                ]),
+                FormInput(
+                  label: "Price",
+                  children: [
+                    CustomDropdown(
+                      value: priceInterval,
+                      onChanged: (val) async {
+                        setState(() {
+                          priceInterval = val;
+                        });
+                      },
+                      items: ["Daily", "Weekly", "Monthly"]
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                            value: value, child: Text(value));
+                      }).toList(),
+                    ),
+                    CustomTextInput(
+                      suffixIcon: Icon(Icons.euro),
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      hint: "Min.",
+                      controller: priceMinController,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
+                    CustomTextInput(
+                      suffixIcon: Icon(Icons.euro),
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      controller: priceMaxController,
+                      hint: "Max.",
+                    )
+                  ],
                 ),
-                CustomTextInput(
-                  suffixIcon: Icon(Icons.euro),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  controller: priceMaxController,
-                  hint: "Max.",
-                )
-              ],
-          ),
-           FormInput(
-            label: "Area", 
-            children: [
-                CustomTextInput(
-                  suffixIcon: Icon(Icons.square_foot),
-                  keyboardType: TextInputType.numberWithOptions(),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  controller: areaMinController,
-                  hint: "Min.",
+                FormInput(
+                  label: "Area",
+                  children: [
+                    CustomTextInput(
+                      suffixIcon: Icon(Icons.square_foot),
+                      keyboardType: TextInputType.numberWithOptions(),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      controller: areaMinController,
+                      hint: "Min.",
+                    ),
+                    CustomTextInput(
+                      suffixIcon: Icon(Icons.square_foot),
+                      keyboardType: TextInputType.numberWithOptions(),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      controller: areaMaxController,
+                      hint: "Max.",
+                    )
+                  ],
                 ),
-                CustomTextInput(
-                  suffixIcon: Icon(Icons.square_foot),
-                  keyboardType: TextInputType.numberWithOptions(),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  controller: areaMaxController,
-                  hint: "Max.",
-                )
-              ],
-          ),
-          FormInput(
-            label: "Availability", 
-            children: [
-                DateInput(
-                  initialDate: fromDate,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 30 * 24)),
-                  onDateSelected: (date) async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      await prefs.setString(FilterPage.KEY_FROM_DATE, date.toIso8601String());
-                  },
+                FormInput(
+                  label: "Availability",
+                  children: [
+                    DateInput(
+                      initialDate: fromDate,
+                      firstDate: DateTime.now(),
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 30 * 24)),
+                      onDateSelected: (date) async {
+                        setState(() {
+                          fromDate = date;
+                        });
+                      },
+                    ),
+                    DateInput(
+                      initialDate: toDate,
+                      firstDate: DateTime.now(),
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 30 * 24)),
+                      onDateSelected: (date) async {
+                        setState(() {
+                          toDate = date;
+                        }); 
+                      },
+                    )
+                  ],
                 ),
-                DateInput(
-                  initialDate: toDate,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 30 * 24)),
-                  onDateSelected: (date) async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      await prefs.setString(FilterPage.KEY_TO_DATE, date.toIso8601String());
-                  },
-                )
+                Spacer(),
+                SizedBox(
+                    width: double.infinity,
+                    child: PrimaryButton(
+                        text: "Apply",
+                        onPressed: () {
+                          applyFilter();
+                          Navigator.pop(context);
+                        })),
               ],
-          ),
-          Spacer(),
-          SizedBox(
-              width: double.infinity,
-              child: PrimaryButton(text: "Apply", onPressed: () => {
-                Navigator.pop(context)
-              })
-            ),
-          
-          
-          
-        ],
-    ))
-    ; 
+            )));
   }
-}
-
-class FilterPageResult {
-  final double? priceMin;
-  final double? priceMax;
-
-  final double? areaMin;
-  final double? areaMax;
-
-  final DateTime? from;
-  final DateTime? to;
-
-  const FilterPageResult({ this.priceMin, this.priceMax, this.areaMin, this.areaMax, this.from, this.to });
-
 }

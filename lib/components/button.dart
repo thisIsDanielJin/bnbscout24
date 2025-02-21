@@ -42,18 +42,8 @@ class SquareArrowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: ColorPalette.lightGrey,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: EdgeInsets.fromLTRB(Sizes.paddingBig, Sizes.paddingRegular,
-              Sizes.paddingRegular, Sizes.paddingRegular),
-          elevation: 0, // No shadow
-        ),
-        child: Row(
+    return SquareButton(onPressed: onPressed, child: 
+    Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
@@ -66,6 +56,32 @@ class SquareArrowButton extends StatelessWidget {
             ),
             Icon(Icons.chevron_right, color: Colors.black, size: 40)
           ],
-        ));
+        )
+    );
+  }
+}
+
+class SquareButton extends StatelessWidget {
+  final Widget child;
+  final VoidCallback onPressed;
+
+  const SquareButton(
+      {super.key, required this.child, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorPalette.lightGrey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.fromLTRB(Sizes.paddingRegular, Sizes.paddingRegular,
+              Sizes.paddingRegular, Sizes.paddingRegular),
+          elevation: 0, // No shadow
+        ),
+        child: child);
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bnbscout24/components/custom_text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bnbscout24/components/office_result_card.dart';
@@ -83,36 +84,18 @@ class _SearchPageState extends State<SearchPage> {
                     children: [
                       Expanded(
                         flex: 3,
-                        child: TextField(
+                        child: CustomTextInput(
                           controller: _addressController,
-                          decoration: InputDecoration(
-                            hintText: 'Enter address',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
+                          hint: 'Address',
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         flex: 1,
-                        child: TextField(
+                        child: CustomTextInput(
                           controller: _radiusController,
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'Radius (km)',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
+                          hint: 'Radius (km)',
                         ),
                       ),
                     ],

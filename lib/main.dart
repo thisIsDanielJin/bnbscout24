@@ -3,6 +3,7 @@ import 'package:bnbscout24/components/custom_tab_bar_item.dart';
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/pages/conversations_page.dart';
+import 'package:bnbscout24/pages/create_property.dart';
 import 'package:bnbscout24/pages/home_page.dart';
 import 'package:bnbscout24/pages/profile_page.dart';
 import 'package:bnbscout24/pages/properties_page.dart';
@@ -47,8 +48,10 @@ class MyAppState extends State<MyApp> {
 
     return MaterialApp(
       scaffoldMessengerKey: SnackbarService.scaffoldMessengerKey,
+    
       theme: ThemeData(
         scaffoldBackgroundColor: ColorPalette.white,
+        
       ),
       home: loginManager.isLoggedIn
           ? CustomTabBar(

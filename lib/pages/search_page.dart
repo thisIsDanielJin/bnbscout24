@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:bnbscout24/components/custom_text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bnbscout24/components/office_result_card.dart';
 import 'package:bnbscout24/pages/filter_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -14,13 +16,20 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   List<dynamic> cardData = [];
+  List<dynamic> _filteredCardData = [];
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _radiusController = TextEditingController();
+  Position? _currentPosition;
 
   @override
   void initState() {
     super.initState();
     _loadCardData();
+
+    // Add listener to address controller
+    _addressController.addListener(() {
+      _performSearch();
+    });
   }
 
   @override
@@ -37,10 +46,51 @@ class _SearchPageState extends State<SearchPage> {
       final List<dynamic> data = json.decode(response);
       setState(() {
         cardData = data;
+        _filteredCardData = data; // Initialize filtered data with all data
       });
     } catch (e) {
-      print('Error loading card data: $e');
+      debugPrint('Error loading card data: $e');
     }
+  }
+
+  void _performSearch() {
+    if (_addressController.text.isEmpty) {
+      setState(() {
+        _filteredCardData = cardData;
+      });
+      return;
+    }
+
+    setState(() {
+      _filteredCardData = cardData.where((item) {
+        final streetName = item['streetName'].toString().toLowerCase();
+        final title = item['title'].toString().toLowerCase();
+        final searchTerm = _addressController.text.toLowerCase();
+
+        // Basic text search
+        bool matchesSearch =
+            streetName.contains(searchTerm) || title.contains(searchTerm);
+
+        // Radius check if position and radius are available
+        if (matchesSearch &&
+            _currentPosition != null &&
+            _radiusController.text.isNotEmpty) {
+          final itemLat = item['latitude'] ?? 0.0;
+          final itemLng = item['longitude'] ?? 0.0;
+          final distance = Geolocator.distanceBetween(
+            _currentPosition!.latitude,
+            _currentPosition!.longitude,
+            itemLat,
+            itemLng,
+          );
+          // Convert radius from km to meters
+          final radiusInMeters = double.parse(_radiusController.text) * 1000;
+          return distance <= radiusInMeters;
+        }
+
+        return matchesSearch;
+      }).toList();
+    });
   }
 
   @override
@@ -83,18 +133,9 @@ class _SearchPageState extends State<SearchPage> {
                     children: [
                       Expanded(
                         flex: 3,
-                        child: TextField(
+                        child: CustomTextInput(
                           controller: _addressController,
-                          decoration: InputDecoration(
-                            hintText: 'Enter address',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
+                          hint: 'Address',
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -112,46 +153,66 @@ class _SearchPageState extends State<SearchPage> {
                               horizontal: 16,
                               vertical: 14,
                             ),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.my_location),
+                              onPressed:
+                                  () {}, // Empty function - button does nothing
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
+                  if (_currentPosition != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Current position: ${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
             Expanded(
-              child: cardData.isEmpty
+              child: _filteredCardData.isEmpty &&
+                      _addressController.text.isEmpty
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: cardData.length,
-                      itemBuilder: (context, index) {
-                        final item = cardData[index];
-                        return Column(
-                          children: [
-                            HorizontalCard(
-                              imageUrl: item['imageUrl']?.toString() ?? '',
-                              title: item['title']?.toString() ?? '',
-                              pricePerMonth: (item['pricePerMonth'] is num)
-                                  ? item['pricePerMonth'].toInt()
-                                  : 0,
-                              streetName: item['streetName']?.toString() ?? '',
-                              area: (item['area'] is num)
-                                  ? item['area'].toInt()
-                                  : 0,
-                              deskAmount: (item['deskAmount'] is num)
-                                  ? item['deskAmount'].toInt()
-                                  : 0,
-                              networkSpeed: (item['networkSpeed'] is num)
-                                  ? item['networkSpeed'].toInt()
-                                  : 0,
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        );
-                      },
-                    ),
+                  : _filteredCardData.isEmpty
+                      ? const Center(child: Text('No results found'))
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(8.0),
+                          itemCount: _filteredCardData.length,
+                          itemBuilder: (context, index) {
+                            final item = _filteredCardData[index];
+                            return Column(
+                              children: [
+                                HorizontalCard(
+                                  imageUrl: item['imageUrl']?.toString() ?? '',
+                                  title: item['title']?.toString() ?? '',
+                                  pricePerMonth: (item['pricePerMonth'] is num)
+                                      ? item['pricePerMonth'].toInt()
+                                      : 0,
+                                  streetName:
+                                      item['streetName']?.toString() ?? '',
+                                  area: (item['area'] is num)
+                                      ? item['area'].toInt()
+                                      : 0,
+                                  deskAmount: (item['deskAmount'] is num)
+                                      ? item['deskAmount'].toInt()
+                                      : 0,
+                                  networkSpeed: (item['networkSpeed'] is num)
+                                      ? item['networkSpeed'].toInt()
+                                      : 0,
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            );
+                          },
+                        ),
             ),
           ],
         ),

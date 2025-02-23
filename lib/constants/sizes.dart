@@ -18,5 +18,6 @@ class Sizes {
   static double textSizeSmall = 12;
 
   static double iconSize = 1;
-  static double borderRadius = 1, borderRadiusBig = 1;
+  static double borderRadius = 6.0, borderRadiusBig = 20;
+
 }

@@ -8,10 +8,11 @@ import '../components/book_now_calendar.dart';
 
 
 class DetailsPage extends StatefulWidget {
+  final String priceInterval;
   final String propertyId;
   final List<String>? pictureIds;
   final String title;
-  final double rentPerDay;
+  final int rentPerDay;
   final String description;
   final String street;
   final int area;
@@ -20,6 +21,7 @@ class DetailsPage extends StatefulWidget {
 
   DetailsPage({
     super.key,
+    required this.priceInterval,
     required this.propertyId,
     required this.pictureIds,
     required this.title,
@@ -79,8 +81,10 @@ class _DetailsPageState extends State<DetailsPage> {
                   // Information Section
                   Center(child: _buildSectionTitle('Information')),
                   SizedBox(height: 8),
+                  _buildInfoItem('Property', widget.title, Icons.house),
                   _buildInfoItem('Address', widget.street, Icons.location_on),
-                  _buildInfoRow('Area (m²)', widget.area.toString(), Icons.square_foot, 'Rental Price', widget.rentPerDay.toString(), Icons.attach_money),
+                  _buildInfoRow('Area (m²)', widget.area.toString(), Icons.square_foot, 'Price ${widget.priceInterval}', widget.rentPerDay.toString(), Icons.attach_money),
+                  _buildInfoRow('Rooms', widget.deskAmount.toString(), Icons.room, 'Mbit/s', widget.networkSpeed.toString(), Icons.wifi),
                   Divider(height: 40, thickness: 1),
 
                   // Description Section

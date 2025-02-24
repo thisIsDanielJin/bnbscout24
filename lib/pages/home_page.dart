@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
   
                   child: ListView(children: foundProps.map((p) => Container(
                       margin: EdgeInsets.only(bottom: Sizes.paddingRegular),
-                      child: HorizontalCard(imageUrl: (p.pictureIds?.length ?? 0) > 0 ? Property.generateImageUrls(p)![0] : "", title: p.name, pricePerMonth: round(p.priceIntervalCents / 100).toInt(), streetName: p.address, area: p.squareMetres.floor(), deskAmount: p.roomAmount, networkSpeed: p.mbitPerSecond?.floor() ?? 0),
+                      child: HorizontalCard(priceInterval: p.priceInterval, imageUrl: (p.pictureIds?.length ?? 0) > 0 ? Property.generateImageUrls(p)![0] : "", title: p.name, pricePerMonth: round(p.priceIntervalCents / 100).toInt(), streetName: p.address, area: p.squareMetres.floor(), deskAmount: p.roomAmount, networkSpeed: p.mbitPerSecond?.floor() ?? 0),
                     )).toList())
                   
                 );

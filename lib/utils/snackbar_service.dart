@@ -7,13 +7,21 @@ class SnackbarService {
   static GlobalKey<ScaffoldMessengerState> get scaffoldMessengerKey =>
       _scaffoldMessengerKey;
 
-  static void showError(String message) {
+  static void showMessage(String message, MaterialColor color) {
     _scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: color,
         duration: const Duration(seconds: 3),
       ),
     );
+  }
+
+  static void showError(String message) {
+    showMessage(message, Colors.red);
+  }
+
+  static void showSuccess(String message) {
+    showMessage(message, Colors.green);
   }
 }

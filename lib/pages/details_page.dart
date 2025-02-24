@@ -8,14 +8,11 @@ import '../components/book_now_calendar.dart';
 
 
 class DetailsPage extends StatefulWidget {
-  final List<String> pictureIds;
-  final String imageUrl;
+  final List<String>? pictureIds;
   final String title;
   final double rentPerDay;
   final String description;
   final String street;
-  final String city;
-  final int zipCode;
   final int area;
   final int deskAmount;
   final int networkSpeed;
@@ -23,13 +20,10 @@ class DetailsPage extends StatefulWidget {
   DetailsPage({
     super.key,
     required this.pictureIds,
-    required this.imageUrl,
     required this.title,
     required this.rentPerDay,
     required this.description,
     required this.street,
-    required this.city,
-    required this.zipCode,
     required this.area,
     required this.deskAmount,
     required this.networkSpeed,
@@ -47,18 +41,13 @@ class _DetailsPageState extends State<DetailsPage> {
     {"text": "Attribute 4", "icon": Icons.bolt},
     {"text": "Attribute 5", "icon": Icons.eco},
   ];
-  List<Widget> images = [
-    Image(image: AssetImage('images/photo.jpg'),
-      height: 100,
-    ),
-    Image(image: AssetImage('images/photo1.jpg'),
-      height: 100,
-    ),
-    Image(image: AssetImage('images/photo2.jpg'),
-      height: 100,
-    )
-  ];
+   List<Widget> images= [];
 
+  @override
+  void initState(){
+    super.initState();
+    images = buildImages();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,31 +71,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Photo Carousel
-                  SizedBox(
-                    height: 200,
-                    child: Stack(
-                      children: [
-                        CarouselSlider(
-                          items: List<Widget>.from(widget.pictureIds.map((picture) => images.add(Image(image: AssetImage(picture),height: 100)))),
-                          options: CarouselOptions(
-                            height: 150,
-                            aspectRatio: 16 / 9,
-                            viewportFraction: 0.8,
-                            initialPage: 0,
-                            enableInfiniteScroll: false,
-                            reverse: false,
-                            autoPlay: false,
-                            autoPlayInterval: Duration(seconds: 3),
-                            autoPlayAnimationDuration: Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            enlargeCenterPage: true,
-                            enlargeFactor: 0.3,
-                            scrollDirection: Axis.horizontal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Carousel(),
                   SizedBox(height: 24),
 
                   // Information Section
@@ -224,6 +189,41 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  Widget Carousel(){
+    if(widget.pictureIds!.isNotEmpty) {
+      return SizedBox(
+        height: 200,
+        child: Stack(
+          children: [
+            CarouselSlider(
+              items: images,
+              options: CarouselOptions(
+                height: 150,
+                aspectRatio: 16 / 9,
+                viewportFraction: 0.8,
+                initialPage: 0,
+                enableInfiniteScroll: false,
+                reverse: false,
+                autoPlay: false,
+                autoPlayInterval: Duration(seconds: 3),
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: true,
+                enlargeFactor: 0.3,
+                scrollDirection: Axis.horizontal,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return SizedBox(height: 0,);
+  }
+  List<Widget> buildImages(){
+    return List<Widget>.from(widget.pictureIds!.map((picture) =>
+        Image(image: NetworkImage(picture), height: 100)));
+
+  }
   Widget _buildInfoRow(String label1, String value1, IconData icon1, String label2, String value2, IconData icon2) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),

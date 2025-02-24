@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HorizontalCard extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
   final String title;
   final int pricePerMonth;
   final String streetName;
@@ -41,7 +41,7 @@ class HorizontalCard extends StatelessWidget {
                 left: Radius.circular(16),
               ),
               child: Image.network(
-                imageUrl,
+                imageUrl!,
                 height: double.infinity,
                 width: 120,
                 fit: BoxFit.cover,

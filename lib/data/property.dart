@@ -32,7 +32,7 @@ class Property {
       required this.userId,
       required this.description,
       required this.address,
-      this.pictureIds,
+      required this.pictureIds,
       required this.priceInterval,
       required this.priceIntervalCents,
       required this.squareMetres,
@@ -80,6 +80,7 @@ class Property {
   }
 
   static List<String>? generateImageUrls(Property property) {
+
     return property.pictureIds
         ?.map((id) =>
             "$BASE_URL/v1/storage/buckets/$BUCKET_ID/files/$id/view?project=$PROJECT_ID")

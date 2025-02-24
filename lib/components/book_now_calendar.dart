@@ -1,8 +1,27 @@
+import 'package:appwrite/appwrite.dart';
+import 'package:bnbscout24/components/confirmation_bottom_sheet.dart';
 import 'package:bnbscout24/constants/constants.dart';
+import 'package:bnbscout24/data/booking.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class BookingBottomSheet extends StatefulWidget {
+  final String id;
+  final String propertyId;
+  final String? userId;
+  final String? status;
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  BookingBottomSheet(
+  {required this.propertyId,
+  this.userId,
+  this.status,
+  this.startDate,
+  this.endDate,
+  String? id})
+: id = id ?? ID.unique();
+
   @override
   _BookingBottomSheetState createState() => _BookingBottomSheetState();
 }
@@ -160,8 +179,13 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             ),
             onPressed: () {
               if (_selectedStartDay != null && _selectedEndDay != null) {
+                Booking newBooking = Booking(propertyId: widget.propertyId, userId: "user_id", status: "confirmed", startDate: _selectedStartDay, endDate: _selectedEndDay);
+                Booking.createBooking(newBooking);
                 print('Selected: $_selectedStartDay to $_selectedEndDay');
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ConfirmationBottomSheet()),
+                );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Select a valid period')),

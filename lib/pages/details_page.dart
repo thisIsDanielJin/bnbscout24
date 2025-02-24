@@ -8,6 +8,7 @@ import '../components/book_now_calendar.dart';
 
 
 class DetailsPage extends StatefulWidget {
+  final String propertyId;
   final List<String>? pictureIds;
   final String title;
   final double rentPerDay;
@@ -19,6 +20,7 @@ class DetailsPage extends StatefulWidget {
 
   DetailsPage({
     super.key,
+    required this.propertyId,
     required this.pictureIds,
     required this.title,
     required this.rentPerDay,
@@ -132,7 +134,7 @@ class _DetailsPageState extends State<DetailsPage> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return BookingBottomSheet();
+        return BookingBottomSheet(propertyId: widget.propertyId);
       },
     );
   }

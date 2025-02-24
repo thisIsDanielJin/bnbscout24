@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/realtime_browser.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
 
@@ -15,22 +16,25 @@ class Message {
   final String senderId;
   final String receiverId;
   final String message;
+  final DateTime created;
 
   Message(
       {required this.propertyId,
       required this.senderId,
       required this.receiverId,
       required this.message,
+      required this.created,
       String? id})
       : id = id ?? ID.unique();
 
-  static fromJson(Map<String, dynamic> json) {
-    //TODO: add property object as additional attribute to booking object?
+  static fromJson(Map<String, dynamic> json, DateTime created) {
+
     return Message(
         propertyId: json['propertyId']['\$id'],
         senderId: json['senderId'],
-        receiverId: json['senderId'],
+        receiverId: json['receiverId'],
         message: json['message'],
+        created: created,
         id: json['\$id']);
   }
 
@@ -46,16 +50,38 @@ class Message {
   //TODO: move the following functions out of class?
   //TODO: maybe make use of snackbar optional and return error object instead
 
-  static Future<List<Message>?> listMessages({ String? userId }) async {
+  static RealtimeSubscription subscribeMessages() {
+    return  Realtime(ApiClient.database.client).subscribe(["databases.${DB_ID}.collections.${COLLECTION_ID}.documents"]);
+  }
+
+  static Future<List<Message>?> listMessages({ String? userId, String? propertyId }) async {
     try {
       List<Message> messages = [];
 
+      List<String> senderQuery = [Query.equal("senderId", [userId])];
+      if (propertyId != null) {
+        senderQuery.add(Query.equal("propertyId", propertyId));
+      }
       var result = await ApiClient.database
-
-          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID, queries: [Query.equal("senderId", [userId]), Query.equal("receiverId", userId)]);
-
+          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID, queries: senderQuery);
       messages
-          .addAll(result.documents.map((doc) => Message.fromJson(doc.data)));
+          .addAll(result.documents.map((doc) => Message.fromJson(doc.data, DateTime.parse(doc.$createdAt))));
+
+      List<String> receiverQuery = [Query.equal("receiverId", [userId])];
+      if (propertyId != null) {
+        senderQuery.add(Query.equal("propertyId", propertyId));
+      }
+      var result2 = await ApiClient.database
+          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID, queries: receiverQuery);
+      messages
+          .addAll(result2.documents.map((doc) => Message.fromJson(doc.data, DateTime.parse(doc.$createdAt))));
+
+      
+      // Manually filter bc appearenty it is not supported by appwrite to query releations...
+      if (propertyId != null) {
+        messages = messages.where((msg) => msg.propertyId == propertyId).toList();
+      }
+      messages.sort((msg1, msg2) => msg1.created.compareTo(msg2.created));
 
       return messages;
     } catch (error) {
@@ -72,7 +98,7 @@ class Message {
           databaseId: DB_ID,
           collectionId: COLLECTION_ID,
           documentId: messageId);
-      return Message.fromJson(result.data);
+      return Message.fromJson(result.data, DateTime.parse(result.$createdAt));
     } catch (error) {
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');
@@ -81,14 +107,14 @@ class Message {
     }
   }
 
-  static Future<Message?> createBooking(Message newBooking) async {
+  static Future<Message?> createMessage(Message newMessage) async {
     try {
       var result = await ApiClient.database.createDocument(
           databaseId: DB_ID,
           collectionId: COLLECTION_ID,
-          documentId: newBooking.id,
-          data: Message.toJson(newBooking));
-      return Message.fromJson(result.data);
+          documentId: newMessage.id,
+          data: Message.toJson(newMessage));
+      return Message.fromJson(result.data, DateTime.parse(result.$createdAt));
     } catch (error) {
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');
@@ -119,7 +145,7 @@ class Message {
           documentId: messageId,
           data: updateJson);
 
-      return Message.fromJson(result.data);
+      return Message.fromJson(result.data, DateTime.parse(result.$createdAt));
     } catch (error) {
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');

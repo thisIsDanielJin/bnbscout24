@@ -10,6 +10,7 @@ class CustomTextInput extends StatelessWidget {
   final bool? readOnly;
   final int? maxLines;
   final Widget? suffixIcon;
+
   final ValueChanged<String>? onChanged; 
   final List<TextInputFormatter>? inputFormatters;
   const CustomTextInput({super.key, this.hint, this.keyboardType, this.controller, this.readOnly, this.suffixIcon, this.onChanged, this.inputFormatters, this.maxLines});
@@ -22,6 +23,7 @@ class CustomTextInput extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       onChanged: onChanged,
+      
       inputFormatters: inputFormatters,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,

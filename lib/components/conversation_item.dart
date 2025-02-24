@@ -41,8 +41,9 @@ class ConversationItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ClipRRect(
+                  
                   borderRadius: BorderRadius.circular(Sizes.borderRadius),
-                  child: Image.network(imageUrl),
+                  child: Image.network(imageUrl, width: 160),
                 ),
                 Expanded(
                   child: Container(

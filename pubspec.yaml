@@ -52,6 +52,7 @@ dependencies:
   nominatim_flutter: ^0.0.6
   image_picker: ^1.1.2
   flutter_map_marker_popup: ^6.1.2
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

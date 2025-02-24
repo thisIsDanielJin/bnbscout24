@@ -16,6 +16,7 @@ class PageBase extends StatelessWidget {
         body: Container(
       padding: EdgeInsets.all(Sizes.paddingRegular),
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(spacing: Sizes.paddingSmall, children: [
@@ -34,7 +35,7 @@ class PageBase extends StatelessWidget {
                       fontSize: Sizes.textSizeBig, fontWeight: FontWeight.bold),
                 )),
           ]),
-            child
+            Expanded(child: child)
         ],
       ),
     ));

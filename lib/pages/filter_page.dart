@@ -3,6 +3,7 @@ import 'package:bnbscout24/components/custom_dropdown.dart';
 import 'package:bnbscout24/components/date_input.dart';
 import 'package:bnbscout24/components/form_input.dart';
 import 'package:bnbscout24/components/custom_text_input.dart';
+import 'package:bnbscout24/components/page_base.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,32 +91,13 @@ class _FilterPageState extends State<FilterPage> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-        body: Container(
-            padding: EdgeInsets.fromLTRB(
-                Sizes.paddingRegular,
-                Sizes.paddingRegular,
-                Sizes.paddingRegular,
-                Sizes.paddingRegular),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(spacing: Sizes.paddingSmall, children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: Sizes.paddingBig),
-                      child: Text(
-                        "Filter",
-                        style: TextStyle(
-                            fontSize: Sizes.textSizeBig,
-                            fontWeight: FontWeight.bold),
-                      )),
-                ]),
+    return PageBase(
+          title: "Filter",
+            child: IntrinsicHeight(
+            child: Column(spacing: Sizes.paddingSmall, 
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+                
                 FormInput(
                   label: "Price",
                   children: [

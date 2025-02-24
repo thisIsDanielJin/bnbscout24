@@ -116,10 +116,7 @@ class _CreatePropertyPageState extends State<CreatePropertyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            padding: EdgeInsets.fromLTRB(
-                Sizes.paddingRegular,
-                Sizes.paddingRegular,
-                Sizes.paddingRegular,
+            padding: EdgeInsets.all(
                 Sizes.paddingRegular),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

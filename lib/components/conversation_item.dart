@@ -8,12 +8,14 @@ class ConversationItem extends StatelessWidget {
   final String description;
   final String imageUrl;
   final bool? isNew;
+  final VoidCallback? onPressed;
 
   const ConversationItem(
       {super.key,
       required this.title,
       required this.description,
       required this.imageUrl,
+      this.onPressed,
       this.isNew});
 
   @override
@@ -32,11 +34,7 @@ class ConversationItem extends StatelessWidget {
           padding: EdgeInsets.all(0),
           elevation: 0, // No shadow
         ),
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ConversationPage(messageId: title),
-            )),
+        onPressed: onPressed,
         child: SizedBox(
             height: 110,
             child: Row(

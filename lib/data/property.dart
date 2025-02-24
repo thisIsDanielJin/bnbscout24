@@ -114,7 +114,7 @@ class Property {
       var result = await ApiClient.database
           .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID);
 
-      print(result.documents.length);
+
       for (Document doc in result.documents) {
         try {
           properties.add(Property.fromJson(doc.data));

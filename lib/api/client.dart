@@ -15,8 +15,8 @@ class ApiClient {
   static Account get account => Account(_instance._client);
   static Databases get database => Databases(_instance._client);
   static Storage get storage => Storage(_instance._client);
+  static Teams get teams => Teams(_instance._client);
 
-//TODO: ???
   static final ApiClient _instance = ApiClient._internal();
   ApiClient._internal();
   factory ApiClient() => _instance;

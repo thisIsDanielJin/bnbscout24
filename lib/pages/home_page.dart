@@ -81,25 +81,40 @@ class _HomePageState extends State<HomePage> {
               markers: markers,
               popupDisplayOptions: PopupDisplayOptions(
                   builder: (BuildContext context, Marker marker) {
-
-                    List<Property> foundProps = properties.where((p) => p.geoLat == marker.point.latitude && p.geoLon == marker.point.longitude).toList();
-
+                List<Property> foundProps = properties
+                    .where((p) =>
+                        p.geoLat == marker.point.latitude &&
+                        p.geoLon == marker.point.longitude)
+                    .toList();
 
                 return Container(
-                  padding: EdgeInsets.all(Sizes.paddingRegular),
-                  height: 300,
-                  width: 500,
-                  decoration: BoxDecoration(
-                    color: ColorPalette.white,
-                    borderRadius: BorderRadius.circular(Sizes.borderRadius)
-                    ),
-  
-                  child: ListView(children: foundProps.map((p) => Container(
-                      margin: EdgeInsets.only(bottom: Sizes.paddingRegular),
-                      child: HorizontalCard(imageUrl: (p.pictureIds?.length ?? 0) > 0 ? Property.generateImageUrls(p)![0] : "", title: p.name, pricePerMonth: round(p.priceIntervalCents / 100).toInt(), streetName: p.address, area: p.squareMetres.floor(), deskAmount: p.roomAmount, networkSpeed: p.mbitPerSecond?.floor() ?? 0),
-                    )).toList())
-                  
-                );
+                    padding: EdgeInsets.all(Sizes.paddingRegular),
+                    height: 300,
+                    width: 500,
+                    decoration: BoxDecoration(
+                        color: ColorPalette.white,
+                        borderRadius:
+                            BorderRadius.circular(Sizes.borderRadius)),
+                    child: ListView(
+                        children: foundProps
+                            .map((p) => Container(
+                                  margin: EdgeInsets.only(
+                                      bottom: Sizes.paddingRegular),
+                                  child: HorizontalCard(
+                                      imageUrl: (p.pictureIds?.length ?? 0) > 0
+                                          ? Property.generateImageUrls(p)![0]
+                                          : "",
+                                      title: p.name,
+                                      pricePerMonth:
+                                          round(p.priceIntervalCents / 100)
+                                              .toInt(),
+                                      streetName: p.address,
+                                      area: p.squareMetres.floor(),
+                                      deskAmount: p.roomAmount,
+                                      networkSpeed:
+                                          p.mbitPerSecond?.floor() ?? 0),
+                                ))
+                            .toList()));
               })),
         )
       ],

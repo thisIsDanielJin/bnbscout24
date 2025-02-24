@@ -14,8 +14,8 @@ class Booking {
   final String propertyId;
   final String userId;
   final String status;
-  final DateTime startDate;
-  final DateTime endDate;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   Booking(
       {required this.propertyId,

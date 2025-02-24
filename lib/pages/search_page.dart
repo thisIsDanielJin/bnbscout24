@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:bnbscout24/components/custom_text_input.dart';
+import 'package:bnbscout24/data/property.dart';
+import 'package:bnbscout24/pages/details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bnbscout24/components/office_result_card.dart';
 import 'package:bnbscout24/pages/filter_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,8 +18,8 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<dynamic> cardData = [];
-  List<dynamic> _filteredCardData = [];
+  List<Property>? cardData = [];
+  List<Property>? _filteredCardData = [];
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _radiusController = TextEditingController();
   Position? _currentPosition;
@@ -41,9 +44,9 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _loadCardData() async {
     try {
-      final String response =
-          await rootBundle.loadString('assets/main_card_data.json');
-      final List<dynamic> data = json.decode(response);
+      final List<Property>? data =
+          await Property.listProperties().then((props) => props ?? []);
+
       setState(() {
         cardData = data;
         _filteredCardData = data; // Initialize filtered data with all data
@@ -62,9 +65,9 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     setState(() {
-      _filteredCardData = cardData.where((item) {
-        final streetName = item['streetName'].toString().toLowerCase();
-        final title = item['title'].toString().toLowerCase();
+      _filteredCardData = cardData?.where((item) {
+        final streetName = item.address.toString().toLowerCase();
+        final title = item.name.toString().toLowerCase();
         final searchTerm = _addressController.text.toLowerCase();
 
         // Basic text search
@@ -75,8 +78,8 @@ class _SearchPageState extends State<SearchPage> {
         if (matchesSearch &&
             _currentPosition != null &&
             _radiusController.text.isNotEmpty) {
-          final itemLat = item['latitude'] ?? 0.0;
-          final itemLng = item['longitude'] ?? 0.0;
+          final itemLat = item.geoLat ?? 0.0;
+          final itemLng = item.geoLon ?? 0.0;
           final distance = Geolocator.distanceBetween(
             _currentPosition!.latitude,
             _currentPosition!.longitude,
@@ -178,35 +181,35 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
             Expanded(
-              child: _filteredCardData.isEmpty &&
+              child: _filteredCardData!.isEmpty &&
                       _addressController.text.isEmpty
                   ? const Center(child: CircularProgressIndicator())
-                  : _filteredCardData.isEmpty
+                  : _filteredCardData!.isEmpty
                       ? const Center(child: Text('No results found'))
                       : ListView.builder(
                           padding: const EdgeInsets.all(8.0),
-                          itemCount: _filteredCardData.length,
+                          itemCount: _filteredCardData?.length,
                           itemBuilder: (context, index) {
-                            final item = _filteredCardData[index];
+                            final item = _filteredCardData?[index];
                             return Column(
                               children: [
-                                HorizontalCard(
-                                  imageUrl: item['imageUrl']?.toString() ?? '',
-                                  title: item['title']?.toString() ?? '',
-                                  pricePerMonth: (item['pricePerMonth'] is num)
-                                      ? item['pricePerMonth'].toInt()
-                                      : 0,
-                                  streetName:
-                                      item['streetName']?.toString() ?? '',
-                                  area: (item['area'] is num)
-                                      ? item['area'].toInt()
-                                      : 0,
-                                  deskAmount: (item['deskAmount'] is num)
-                                      ? item['deskAmount'].toInt()
-                                      : 0,
-                                  networkSpeed: (item['networkSpeed'] is num)
-                                      ? item['networkSpeed'].toInt()
-                                      : 0,
+                                GestureDetector(
+                                  onTap:(){
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => DetailsPage(priceInterval: item.priceInterval, propertyId: item.id, pictureIds: item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item) : [], title: item.name.toString() ?? '', rentPerDay: item.priceIntervalCents ?? 0, description: item.description ?? '', street: item.address.toString() ?? '', area: item.squareMetres.toInt() ?? 0, deskAmount: item.roomAmount.toInt() ?? 0, networkSpeed:  item.mbitPerSecond?.toInt() ?? 0)),
+                                    );
+                                  },
+                                  child: HorizontalCard(
+                                    priceInterval: item!.priceInterval ,
+                                    imageUrl:  item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item)?.elementAt(0) : '',
+                                    title: item.name.toString() ?? '',
+                                    pricePerMonth: item.priceIntervalCents ?? 0,
+                                    streetName: item.address.toString() ?? '',
+                                    area: item.squareMetres.toInt() ?? 0,
+                                    deskAmount: item.roomAmount.toInt() ?? 0,
+                                    networkSpeed: item.mbitPerSecond?.toInt() ?? 0,
+                                  ),
                                 ),
                                 const SizedBox(height: 10),
                               ],

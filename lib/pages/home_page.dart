@@ -101,6 +101,7 @@ class _HomePageState extends State<HomePage> {
                                   margin: EdgeInsets.only(
                                       bottom: Sizes.paddingRegular),
                                   child: HorizontalCard(
+                                      priceInterval: p.priceInterval,
                                       imageUrl: (p.pictureIds?.length ?? 0) > 0
                                           ? Property.generateImageUrls(p)![0]
                                           : "",

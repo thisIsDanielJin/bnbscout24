@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HorizontalCard extends StatelessWidget {
-  final String imageUrl;
+  final String priceInterval;
+  final String? imageUrl;
   final String title;
   final int pricePerMonth;
   final String streetName;
@@ -12,6 +13,7 @@ class HorizontalCard extends StatelessWidget {
 
   const HorizontalCard({
     super.key,
+    required this.priceInterval,
     required this.imageUrl,
     required this.title,
     required this.pricePerMonth,
@@ -41,7 +43,7 @@ class HorizontalCard extends StatelessWidget {
                 left: Radius.circular(16),
               ),
               child: Image.network(
-                imageUrl,
+                imageUrl!,
                 height: double.infinity,
                 width: 120,
                 fit: BoxFit.cover,
@@ -92,8 +94,8 @@ class HorizontalCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 20),
                         _buildInfoItem(
-                          FontAwesomeIcons.desktop,
-                          '$deskAmount desks',
+                          FontAwesomeIcons.locationDot,
+                          '$deskAmount rooms',
                         ),
                         const SizedBox(width: 20),
                         _buildInfoItem(
@@ -117,8 +119,8 @@ class HorizontalCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Text(
-                            'per Month',
+                           Text(
+                            priceInterval,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.black,
@@ -136,7 +138,9 @@ class HorizontalCard extends StatelessWidget {
       ),
     );
   }
-
+ String Interval(){
+    return "per${this.priceInterval}";
+ }
   Widget _buildInfoItem(IconData icon, String text) {
     return Row(
       mainAxisSize: MainAxisSize.min,

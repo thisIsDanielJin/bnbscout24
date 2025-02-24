@@ -26,7 +26,6 @@ class Property {
   final int roomAmount;
   final double? mbitPerSecond;
 
-
   Property(
       {required this.name,
       required this.userId,
@@ -52,13 +51,12 @@ class Property {
         pictureIds: json['pictureIds'].cast<String>(),
         priceInterval: json['priceInterval'],
         priceIntervalCents: json['priceIntervalCents'],
-        squareMetres: json['squareMetres'],
+        squareMetres: json['squareMetres']?.toDouble(),
         roomAmount: json['roomAmount'],
-        mbitPerSecond: json['mbitPerSecond'],
-        geoLat: json['geoLat'],
-        geoLon: json['geoLon'],
+        mbitPerSecond: json['mbitPerSecond']?.toDouble(),
+        geoLat: json['geoLat']?.toDouble(),
+        geoLon: json['geoLon']?.toDouble(),
         id: json['\$id']);
-        
   }
 
   static Map<String, dynamic> toJson(Property property) {
@@ -70,7 +68,6 @@ class Property {
     json['pictureIds'] = property.pictureIds;
     json['priceInterval'] = property.priceInterval;
     json['priceIntervalCents'] = property.priceIntervalCents;
-    
     json['squareMetres'] = property.squareMetres;
     json['roomAmount'] = property.roomAmount;
     json['mbitPerSecond'] = property.mbitPerSecond;
@@ -80,7 +77,6 @@ class Property {
   }
 
   static List<String>? generateImageUrls(Property property) {
-
     return property.pictureIds
         ?.map((id) =>
             "$BASE_URL/v1/storage/buckets/$BUCKET_ID/files/$id/view?project=$PROJECT_ID")
@@ -119,10 +115,9 @@ class Property {
       for (Document doc in result.documents) {
         try {
           properties.add(Property.fromJson(doc.data));
-        }
-        catch(e) {
+        } catch (e) {
           print("Error parsing doc");
-          print(e);          
+          print(e);
         }
       }
 
@@ -179,7 +174,6 @@ class Property {
       int? roomAmount,
       double? mbitPerSecond}) async {
     try {
-
       var updateJson = {};
       if (name != null) updateJson['name'] = name;
       if (userId != null) updateJson['userId'] = userId;

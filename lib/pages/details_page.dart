@@ -8,6 +8,7 @@ import '../components/book_now_calendar.dart';
 
 
 class DetailsPage extends StatefulWidget {
+  final bool showBookButton;
   final String priceInterval;
   final String propertyId;
   final List<String>? pictureIds;
@@ -21,6 +22,7 @@ class DetailsPage extends StatefulWidget {
 
   DetailsPage({
     super.key,
+    this.showBookButton = true,
     required this.priceInterval,
     required this.propertyId,
     required this.pictureIds,
@@ -37,14 +39,6 @@ class DetailsPage extends StatefulWidget {
   _DetailsPageState createState() => _DetailsPageState();
 }
 class _DetailsPageState extends State<DetailsPage> {
-
-  final List<Map<String, dynamic>> attributes = [
-    {"text": "Attribute 1", "icon": Icons.star},
-    {"text": "Attribute 2", "icon": Icons.euro},
-    {"text": "Attribute 3", "icon": Icons.check},
-    {"text": "Attribute 4", "icon": Icons.bolt},
-    {"text": "Attribute 5", "icon": Icons.eco},
-  ];
    List<Widget> images= [];
 
   @override
@@ -57,6 +51,7 @@ class _DetailsPageState extends State<DetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: ColorPalette.white,
         title: Text('Booking Details'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: Colors.black),
@@ -101,33 +96,7 @@ class _DetailsPageState extends State<DetailsPage> {
           ),
 
           // Static "Book Now" Button
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorPalette.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  padding: EdgeInsets.all(Sizes.paddingBig),
-                  elevation: 0, // No shadow
-                ),
-                onPressed: () {_showBookingBottomSheet(context);},
-                child: Text(
-                  'Book Now',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          Button()
         ],
       ),
     );
@@ -141,6 +110,38 @@ class _DetailsPageState extends State<DetailsPage> {
         return BookingBottomSheet(propertyId: widget.propertyId);
       },
     );
+  }
+  Widget Button(){
+    if(widget.showBookButton){
+      return Positioned(
+        left: 16,
+        right: 16,
+        bottom: 16,
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorPalette.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+              ),
+              padding: EdgeInsets.all(Sizes.paddingBig),
+              elevation: 0, // No shadow
+            ),
+            onPressed: () {_showBookingBottomSheet(context);},
+            child: Text(
+              'Book Now',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return SizedBox(height: 1,);
   }
 
   Widget _buildSectionTitle(String title) {

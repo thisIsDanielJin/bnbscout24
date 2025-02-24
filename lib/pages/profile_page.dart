@@ -1,3 +1,4 @@
+import 'package:bnbscout24/pages/booking_history.dart';
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/components/button.dart';
@@ -58,7 +59,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               );
                             }),
                         SquareArrowButton(
-                            text: "Booking History", onPressed: () {}),
+                            text: "Booking History", onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => BookingHistory()),
+                          );
+                        }),
                         SquareArrowButton(
                             text: "Logout",
                             onPressed: () => loginManager.logout()),

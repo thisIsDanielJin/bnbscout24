@@ -4,6 +4,7 @@ import 'package:bnbscout24/components/button.dart';
 import 'package:bnbscout24/api/login_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:bnbscout24/pages/change_password_page.dart';
+import 'package:bnbscout24/pages/user_info_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -35,7 +36,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           )),
                       Column(spacing: Sizes.paddingRegular, children: [
                         SquareArrowButton(
-                            text: "User Information", onPressed: () {}),
+                            text: "User Information",
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const UserInformationPage(),
+                                ),
+                              );
+                            }),
                         SquareArrowButton(
                             text: "Change Password",
                             onPressed: () {

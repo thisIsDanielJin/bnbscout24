@@ -94,7 +94,7 @@ class BookingRequestItem extends StatelessWidget {
               ],
             ),
           ),
-          Container(
+          status == "booked" ? Container(
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(color: Colors.grey[200]!),
@@ -132,6 +132,8 @@ class BookingRequestItem extends StatelessWidget {
                 ),
               ],
             ),
+          ) : Container(
+            child: Text(status),
           ),
         ],
       ),

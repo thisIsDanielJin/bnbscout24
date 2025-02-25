@@ -128,7 +128,7 @@ class Booking {
       if (status != null) updateJson['status'] = status;
       if (startDate != null) updateJson['startDate'] = startDate;
       if (endDate != null) updateJson['endDate'] = endDate;
-
+      print(updateJson);
       var result = await ApiClient.database.updateDocument(
           databaseId: DB_ID,
           collectionId: COLLECTION_ID,
@@ -137,6 +137,7 @@ class Booking {
 
       return Booking.fromJson(result.data);
     } catch (error) {
+      print(error);
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');
       }

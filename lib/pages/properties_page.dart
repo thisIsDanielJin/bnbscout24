@@ -62,7 +62,7 @@ class _PropertiesPageState extends State<PropertiesPage>
     }
   }
 
-  Future<void> _handleBookingAction(Booking booking, String status) async {
+  Future<void>  _handleBookingAction(Booking booking, String status) async {
     try {
       await Booking.updateBooking(booking.id, status: status);
       _loadData(); // Reload the list
@@ -186,7 +186,7 @@ class _PropertiesPageState extends State<PropertiesPage>
                                     onAccept: () => _handleBookingAction(
                                         booking, "approved"),
                                     onDecline: () => _handleBookingAction(
-                                        booking, "cancelled"),
+                                        booking, "declined"),
                                   );
                                 },
                               

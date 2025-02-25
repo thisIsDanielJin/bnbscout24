@@ -198,7 +198,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             ),
             onPressed: () async{
               if (_selectedStartDay != null && _selectedEndDay != null) {
-                Booking newBooking = Booking(propertyId: widget.propertyId, userId: loginManager.loggedInUser!.$id, status: "confirmed", startDate: _selectedStartDay, endDate: _selectedEndDay);
+                Booking newBooking = Booking(propertyId: widget.propertyId, userId: loginManager.loggedInUser!.$id, status: "booked", startDate: _selectedStartDay, endDate: _selectedEndDay);
                 Booking? booking = await Booking.createBooking(newBooking);
                 print('Selected: $_selectedStartDay to $_selectedEndDay');
                 if (booking == null) {

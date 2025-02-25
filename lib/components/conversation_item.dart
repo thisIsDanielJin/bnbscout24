@@ -20,11 +20,6 @@ class ConversationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => ConversationPage(messageId: title),
-    //     ));
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: ColorPalette.lightGrey,
@@ -89,7 +84,6 @@ class ConversationItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      // Icon(Icons.hide_image, size: 32),
                       Icon(Icons.arrow_forward_ios, 
                       size: 32,
                       color: ColorPalette.black,),

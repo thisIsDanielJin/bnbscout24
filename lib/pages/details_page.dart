@@ -1,38 +1,25 @@
 
+import 'package:bnbscout24/api/login_manager.dart';
+import 'package:bnbscout24/components/button.dart';
+import 'package:bnbscout24/components/page_base.dart';
+import 'package:bnbscout24/pages/conversation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
 import '../data/property.dart';
 import '../components/book_now_calendar.dart';
 
 
 class DetailsPage extends StatefulWidget {
   final bool showBookButton;
-  final String priceInterval;
-  final String propertyId;
-  final List<String>? pictureIds;
-  final String title;
-  final int rentPerDay;
-  final String description;
-  final String street;
-  final int area;
-  final int deskAmount;
-  final int networkSpeed;
+  final Property property;
 
   DetailsPage({
     super.key,
     this.showBookButton = true,
-    required this.priceInterval,
-    required this.propertyId,
-    required this.pictureIds,
-    required this.title,
-    required this.rentPerDay,
-    required this.description,
-    required this.street,
-    required this.area,
-    required this.deskAmount,
-    required this.networkSpeed,
+    required this.property
   });
 
   @override
@@ -49,24 +36,19 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: ColorPalette.white,
-        title: Text('Booking Details'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back to the previous screen
-          },
-        ),
-      ),
-      body: Stack(
+    final loginManager = Provider.of<LoginManager>(context);
+
+    return PageBase(
+      title: widget.property.name,
+      child: Column(
+        spacing: Sizes.paddingSmall,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: 80), // Add padding to avoid overlap with the button
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          Expanded(
+            flex: 1,
+            child:  SingleChildScrollView(
+            child: 
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Photo Carousel
@@ -76,27 +58,42 @@ class _DetailsPageState extends State<DetailsPage> {
                   // Information Section
                   Center(child: _buildSectionTitle('Information')),
                   SizedBox(height: 8),
-                  _buildInfoItem('Property', widget.title, Icons.house),
-                  _buildInfoItem('Address', widget.street, Icons.location_on),
-                  _buildInfoRow('Area (m²)', widget.area.toString(), Icons.square_foot, 'Price ${widget.priceInterval}', widget.rentPerDay.toString(), Icons.attach_money),
-                  _buildInfoRow('Rooms', widget.deskAmount.toString(), Icons.room, 'Mbit/s', widget.networkSpeed.toString(), Icons.wifi),
+                  _buildInfoItem('Property', widget.property.name, Icons.house),
+                  _buildInfoItem('Address', widget.property.address, Icons.location_on),
+                  _buildInfoRow('Area (m²)', widget.property.squareMetres.toString(), Icons.square_foot, 'Price ${widget.property.priceInterval}', (widget.property.priceIntervalCents / 100.0).toString(), Icons.attach_money),
+                  _buildInfoRow('Rooms', widget.property.roomAmount.toString(), Icons.room, 'Mbit/s', widget.property.mbitPerSecond?.toString() ?? "0", Icons.wifi),
                   Divider(height: 40, thickness: 1),
 
                   // Description Section
                   Center(child: _buildSectionTitle('Description')),
                   SizedBox(height: 12),
                   Text(
-                    widget.description,
+                    widget.property.description,
                     style: TextStyle(fontSize: 16, height: 1.5),
                   ),
-                  SizedBox(height: 270),
                 ],
               ),
             ),
           ),
-
-          // Static "Book Now" Button
-          Button()
+          
+          
+         
+          
+          if(widget.property.userId != loginManager.loggedInUser?.$id) ColorButton(
+            color: ColorPalette.darkGrey,
+            text: "Contact Owner",
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => ConversationPage(property: widget.property, chatPartnerId: widget.property.userId,),
+                            ));
+            },
+          ),
+          ColorButton(
+            text: "Book Now",
+            onPressed: () {
+              _showBookingBottomSheet(context);
+            },
+          )
         ],
       ),
     );
@@ -107,42 +104,11 @@ class _DetailsPageState extends State<DetailsPage> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return BookingBottomSheet(propertyId: widget.propertyId);
+        return BookingBottomSheet(propertyId: widget.property.id);
       },
     );
   }
-  Widget Button(){
-    if(widget.showBookButton){
-      return Positioned(
-        left: 16,
-        right: 16,
-        bottom: 16,
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorPalette.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40),
-              ),
-              padding: EdgeInsets.all(Sizes.paddingBig),
-              elevation: 0, // No shadow
-            ),
-            onPressed: () {_showBookingBottomSheet(context);},
-            child: Text(
-              'Book Now',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    return SizedBox(height: 1,);
-  }
+
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -197,17 +163,12 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   Widget Carousel(){
-    if(widget.pictureIds!.isNotEmpty) {
-      return SizedBox(
-        height: 200,
-        child: Stack(
-          children: [
-            CarouselSlider(
+    if(widget.property.pictureIds!.isNotEmpty) {
+      return CarouselSlider(
               items: images,
               options: CarouselOptions(
-                height: 150,
-                aspectRatio: 16 / 9,
-                viewportFraction: 0.8,
+                height: 200,
+                viewportFraction: 1,
                 initialPage: 0,
                 enableInfiniteScroll: false,
                 reverse: false,
@@ -219,16 +180,13 @@ class _DetailsPageState extends State<DetailsPage> {
                 enlargeFactor: 0.3,
                 scrollDirection: Axis.horizontal,
               ),
-            ),
-          ],
-        ),
-      );
+            );
     }
     return SizedBox(height: 0,);
   }
   List<Widget> buildImages(){
-    return List<Widget>.from(widget.pictureIds!.map((picture) =>
-        Image(image: NetworkImage(picture), height: 100)));
+    return List<Widget>.from(Property.generateImageUrls(widget.property)!.map((picture) =>
+        Image(image: NetworkImage(picture), fit: BoxFit.cover,)));
 
   }
   Widget _buildInfoRow(String label1, String value1, IconData icon1, String label2, String value2, IconData icon2) {

@@ -9,15 +9,17 @@ import 'package:bnbscout24/pages/conversation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class PropertyMessages {
-  final List<Message> messages;
+class PropertyConversation {
+  final MessageConversation conversation;
   final Property property;
 
-  PropertyMessages({required this.messages, required this.property});
+  PropertyConversation({required this.property, required this.conversation});
 }
 
 class ConversationsPage extends StatefulWidget {
+
   const ConversationsPage({super.key});
 
   @override
@@ -25,7 +27,7 @@ class ConversationsPage extends StatefulWidget {
 }
 
 class _ConversationsPageState extends State<ConversationsPage> {
-  Map<String, PropertyMessages> propertyMessages = {};
+  List<PropertyConversation> propertyMessages = [];
   RealtimeSubscription? realtimeSubscription;
   @override
   void initState() {
@@ -43,30 +45,22 @@ class _ConversationsPageState extends State<ConversationsPage> {
     
   }
 
+
+
   void loadData() async {
     final loginManager = Provider.of<LoginManager>(context, listen: false);
 
-    Map<String, PropertyMessages> propertyMessages = {};
-    // ToDo Replace userId with own user id
-    List<Message>? messages = await Message.listMessages(userId: loginManager.loggedInUser?.$id);
-
-    if (messages != null) {
-      for (Message message in messages) {
-        if (propertyMessages.containsKey(message.propertyId)) {
-          propertyMessages[message.propertyId]!.messages.add(message);
-          continue;
-        }
-        Property? property = await Property.getPropertyById(message.propertyId);
-        if (property != null) {
-          propertyMessages[message.propertyId] =
-              PropertyMessages(messages: [message], property: property);
-        }
+    List<MessageConversation>? conversations = await Message.listMessageConverstations(userId: loginManager.loggedInUser?.$id);
+    print(conversations);
+    if (conversations != null) {
+      List<PropertyConversation> mc = [];
+      for (MessageConversation convo in conversations) {
+        mc.add(PropertyConversation(property: (await Property.getPropertyById(convo.propertyId))!, conversation: convo));
       }
+      setState(() {
+        propertyMessages = mc;
+      });
     }
-    
-    setState(() {
-      this.propertyMessages = propertyMessages;
-    });
   }
 
   @override
@@ -79,21 +73,27 @@ class _ConversationsPageState extends State<ConversationsPage> {
   Widget build(BuildContext context) {
     return PageBase(
         title: "Conversations",
-        child: Column(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(bottom: Sizes.navBarFullSize),
+          child: Column(
           spacing: Sizes.paddingRegular,
-          children: propertyMessages.values
+          children: propertyMessages
               .map((pm) => ConversationItem(
                   title: pm.property.name,
-                  description: pm.messages.last.message,
+                  description: pm.conversation.messages.last.message,
+                  isNew: pm.conversation.isNew,
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => ConversationPage(property: pm.property),
+                              builder: (context) => ConversationPage(property: pm.property, chatPartnerId: pm.conversation.chatPartnerId,),
                             ));
                   },
                   imageUrl: (pm.property.pictureIds?.isNotEmpty ?? false) ?
                       Property.generateImageUrls(pm.property)?.first ?? ""
                       : Constants.unknownImageUrl))
               .toList()
-        ));
+        ),
+        )
+        
+        );
   }
 }

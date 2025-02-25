@@ -86,7 +86,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     SizedBox(
                         width: double.infinity,
-                        child: PrimaryButton(
+                        child: ColorButton(
                             text: "Change Password",
                             onPressed: () {
                               if (passwordController.text !=

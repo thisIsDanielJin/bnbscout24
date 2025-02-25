@@ -69,7 +69,12 @@ class ConversationItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
+                      Visibility(
+                        maintainSize: true,
+                        maintainAnimation: true,
+                        maintainState: true,
+                        visible: isNew ?? false,
+                        child: Container(
                         height: 22,
                         padding: EdgeInsets.fromLTRB(
                             Sizes.paddingSmall, 0, Sizes.paddingSmall, 0),
@@ -84,6 +89,8 @@ class ConversationItem extends StatelessWidget {
                           ),
                         ),
                       ),
+                      ),
+                      
                       Icon(Icons.arrow_forward_ios, 
                       size: 32,
                       color: ColorPalette.black,),

@@ -2,6 +2,7 @@ import 'package:bnbscout24/components/button.dart';
 import 'package:bnbscout24/components/form_input.dart';
 import 'package:bnbscout24/components/custom_text_input.dart';
 import 'package:bnbscout24/components/office_result_card.dart';
+import 'package:bnbscout24/components/property_card.dart';
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/data/property.dart';
@@ -100,21 +101,7 @@ class _HomePageState extends State<HomePage> {
                             .map((p) => Container(
                                   margin: EdgeInsets.only(
                                       bottom: Sizes.paddingRegular),
-                                  child: HorizontalCard(
-                                      priceInterval: p.priceInterval,
-                                      imageUrl: (p.pictureIds?.length ?? 0) > 0
-                                          ? Property.generateImageUrls(p)![0]
-                                          : "",
-                                      title: p.name,
-                                      pricePerMonth:
-                                          round(p.priceIntervalCents / 100)
-                                              .toInt(),
-                                      streetName: p.address,
-                                      area: p.squareMetres.floor(),
-                                      deskAmount: p.roomAmount,
-                                      networkSpeed:
-                                          p.mbitPerSecond?.floor() ?? 0),
-                                ))
+                                  child: PropertyCard(item: p,)))
                             .toList()));
               })),
         )

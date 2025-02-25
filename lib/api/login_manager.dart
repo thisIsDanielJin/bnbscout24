@@ -3,6 +3,7 @@ import 'package:appwrite/models.dart' as models;
 import 'package:bnbscout24/api/client.dart';
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final String LANDLORD_TEAM_ID = '67a6333d562e8cfa48bd';
 
@@ -73,9 +74,11 @@ class LoginManager extends ChangeNotifier {
 
   Future<void> logout() async {
     try {
+
       await ApiClient.account.deleteSession(sessionId: 'current');
       _instance._loggedInUser = null;
       _instance.notifyListeners();
+      (await SharedPreferences.getInstance()).clear();
     } catch (error) {
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');

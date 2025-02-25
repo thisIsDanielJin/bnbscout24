@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
 
@@ -26,8 +27,7 @@ class Booking {
       String? id})
       : id = id ?? ID.unique();
 
-  static fromJson(Map<String, dynamic> json) {
-    //TODO: add property object as additional attribute to booking object?
+  static Booking fromJson(Map<String, dynamic> json) {
     return Booking(
         propertyId: json['propertyId']['\$id'],
         userId: json['userId'],
@@ -56,14 +56,26 @@ class Booking {
       var result = await ApiClient.database
           .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID);
 
-      bookings
-          .addAll(result.documents.map((doc) => Booking.fromJson(doc.data)));
+
+      for (Document doc in result.documents) {
+        try {
+          bookings.add(Booking.fromJson(doc.data));
+        }
+        catch(e) {
+          print("Error parsing booking ${e}");
+        }
+      }
+  
+
+      print(bookings);
 
       return bookings;
     } catch (error) {
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');
       }
+      print("ERROR");
+      print(error);
       return null;
     }
   }

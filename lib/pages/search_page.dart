@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bnbscout24/components/custom_text_input.dart';
+import 'package:bnbscout24/components/property_card.dart';
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/data/booking.dart';
 import 'package:bnbscout24/data/property.dart';
@@ -250,32 +251,7 @@ class _SearchPageState extends State<SearchPage> {
                       : ListView.builder(
                           padding: const EdgeInsets.all(8.0),
                           itemCount: _filteredCardData?.length,
-                          itemBuilder: (context, index) {
-                            final item = _filteredCardData?[index];
-                            return Column(
-                              children: [
-                                GestureDetector(
-                                  onTap:(){
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => DetailsPage(priceInterval: item.priceInterval, propertyId: item.id, pictureIds: item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item) : [], title: item.name.toString() ?? '', rentPerDay: item.priceIntervalCents ?? 0, description: item.description ?? '', street: item.address.toString() ?? '', area: item.squareMetres.toInt() ?? 0, deskAmount: item.roomAmount.toInt() ?? 0, networkSpeed:  item.mbitPerSecond?.toInt() ?? 0)),
-                                    );
-                                  },
-                                  child: HorizontalCard(
-                                    priceInterval: item!.priceInterval ,
-                                    imageUrl:  item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item)?.elementAt(0) : Constants.unknownImageUrl,
-                                    title: item.name.toString() ?? '',
-                                    pricePerMonth: item.priceIntervalCents ?? 0,
-                                    streetName: item.address.toString() ?? '',
-                                    area: item.squareMetres.toInt() ?? 0,
-                                    deskAmount: item.roomAmount.toInt() ?? 0,
-                                    networkSpeed: item.mbitPerSecond?.toInt() ?? 0,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          },
+                          itemBuilder: (context, index) => PropertyCard(item: _filteredCardData![index])
                         ),
             ),
           ],

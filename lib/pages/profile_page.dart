@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   EdgeInsets.only(bottom: Sizes.paddingBig),
                               child: SizedBox(
                                   width: double.infinity,
-                                  child: PrimaryButton(
+                                  child: ColorButton(
                                       text: "Become a landlord",
                                       onPressed: () {})),
                             )

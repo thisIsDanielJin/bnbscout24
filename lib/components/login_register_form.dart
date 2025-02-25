@@ -134,7 +134,7 @@ class LoginRegisterForm extends StatelessWidget {
             SizedBox(height: Sizes.paddingBig),
             SizedBox(
               width: double.infinity,
-              child: PrimaryButton(
+              child: ColorButton(
                   text: buttonText,
                   onPressed: () {
                     onSubmit(emailController.text, passwordController.text,

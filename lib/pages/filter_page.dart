@@ -214,7 +214,7 @@ class _FilterPageState extends State<FilterPage> {
                 Spacer(),
                 SizedBox(
                     width: double.infinity,
-                    child: PrimaryButton(
+                    child: ColorButton(
                         text: "Apply",
                         onPressed: () {
                           applyFilter();

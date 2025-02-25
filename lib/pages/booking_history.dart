@@ -1,6 +1,8 @@
+import 'package:bnbscout24/components/property_card.dart';
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/api/login_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../components/office_result_card.dart';
@@ -15,8 +17,15 @@ class BookingHistory extends StatefulWidget {
   State<BookingHistory> createState() => _BookingHistoryState();
 }
 
+class BookingItem {
+  Property property;
+  Booking booking;
+
+  BookingItem({ required this.property, required this.booking });
+}
+
 class _BookingHistoryState extends State<BookingHistory> {
-  late List<Property?> bookingHistory = [];
+  late List<BookingItem> bookingHistory = [];
 
   @override
   void initState() {
@@ -31,13 +40,12 @@ class _BookingHistoryState extends State<BookingHistory> {
       try {
         List<Booking>? data =
         await Booking.listBookings().then((props) => props ?? []);
-        print(data?.length ?? -1);
-        data = data?.where((booking) => booking.userId == loginManager.loggedInUser?.$id).toList();
-        print(data?.length ?? -1);
-        for(final booking in data!){
-          bookingHistory.add(await Property.getPropertyById(booking.propertyId));
-        }
 
+        data = data?.where((booking) => booking.userId == loginManager.loggedInUser?.$id).toList();
+
+        for(final booking in data!){
+          bookingHistory.add(BookingItem(property: (await Property.getPropertyById(booking.propertyId))!, booking: booking));
+        }
         setState(() {
           bookingHistory = [...bookingHistory];
         });
@@ -64,32 +72,12 @@ class _BookingHistoryState extends State<BookingHistory> {
       body: ListView.builder(
         padding: const EdgeInsets.all(8.0),
         itemCount: bookingHistory.length,
-        itemBuilder: (context, index) {
-          final item = bookingHistory[index];
-          return Column(
-            children: [
-              GestureDetector(
-                onTap:(){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DetailsPage(showBookButton: false ,priceInterval: item.priceInterval, propertyId: item.id, pictureIds: item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item) : [], title: item.name.toString() ?? '', rentPerDay: item.priceIntervalCents ?? 0, description: item.description ?? '', street: item.address.toString() ?? '', area: item.squareMetres.toInt() ?? 0, deskAmount: item.roomAmount.toInt() ?? 0, networkSpeed:  item.mbitPerSecond?.toInt() ?? 0)),
-                  );
-                },
-                child: HorizontalCard(
-                  priceInterval: item!.priceInterval ,
-                  imageUrl:  item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item)?.elementAt(0) : '',
-                  title: item.name.toString() ?? '',
-                  pricePerMonth: item.priceIntervalCents ?? 0,
-                  streetName: item.address.toString() ?? '',
-                  area: item.squareMetres.toInt() ?? 0,
-                  deskAmount: item.roomAmount.toInt() ?? 0,
-                  networkSpeed: item.mbitPerSecond?.toInt() ?? 0,
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
-          );
-        },
+        itemBuilder: (context, index) => Column(
+          children: [
+            Text("${DateFormat("yMd").format(bookingHistory[index].booking.startDate!)} - ${DateFormat("yMd").format(bookingHistory[index].booking.endDate!)}"),
+            PropertyCard(item: bookingHistory[index].property),
+          ],
+        )
       ),
     );
   }

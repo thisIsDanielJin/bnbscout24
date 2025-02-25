@@ -46,6 +46,7 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
+
   Future<void> _loadData() async {
     try {
       final List<Booking>? bookings = await Booking.listBookings();
@@ -179,13 +180,14 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       IconButton(
                         icon: const FaIcon(FontAwesomeIcons.sliders),
-                        onPressed: () {
-                          Navigator.push(
+                        onPressed: () async{
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const FilterPage(),
                             ),
                           );
+                          _performFilterAndSearch();
                         },
                       ),
                     ],

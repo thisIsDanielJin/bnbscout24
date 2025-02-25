@@ -2,14 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
-
-//TODO: move this into env?
-final String BASE_URL = 'https://god-did.de';
-final String PROJECT_ID = '6780ee1a896fed0b8da7';
-final String DB_ID = '6780faa636107ddbb899';
-//these are only valid for property objects/files
-final String COLLECTION_ID = '6780fb97607609a113df';
-final String BUCKET_ID = '67a5d2f8f0ec7c4b941c';
+import 'package:bnbscout24/constants/config.dart';
 
 class Property {
   final String id;
@@ -79,7 +72,7 @@ class Property {
   static List<String>? generateImageUrls(Property property) {
     return property.pictureIds
         ?.map((id) =>
-            "$BASE_URL/v1/storage/buckets/$BUCKET_ID/files/$id/view?project=$PROJECT_ID")
+            "${Config.API_BASE_URL}/storage/buckets/${Config.IMAGE_BUCKET_ID}/files/$id/view?project=${Config.PROJECT_ID}")
         .toList();
   }
 
@@ -88,7 +81,7 @@ class Property {
   static Future<String?> uploadImage(List<int> bytes, String filename) async {
     try {
       var result = await ApiClient.storage.createFile(
-        bucketId: BUCKET_ID,
+        bucketId: Config.IMAGE_BUCKET_ID,
         fileId: ID.unique(),
         file: InputFile.fromBytes(bytes: bytes, filename: filename),
       );
@@ -108,9 +101,9 @@ class Property {
   static Future<List<Property>?> listProperties() async {
     try {
       List<Property> properties = [];
-      var result = await ApiClient.database
-          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID);
-
+      var result = await ApiClient.database.listDocuments(
+          databaseId: Config.DB_ID,
+          collectionId: Config.PROPERTY_COLLECTION_ID);
 
       for (Document doc in result.documents) {
         try {
@@ -135,8 +128,8 @@ class Property {
   static Future<Property?> getPropertyById(String propertyId) async {
     try {
       var result = await ApiClient.database.getDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.PROPERTY_COLLECTION_ID,
           documentId: propertyId);
       return Property.fromJson(result.data);
     } catch (error) {
@@ -150,8 +143,8 @@ class Property {
   static Future<Property?> createProperty(Property newProperty) async {
     try {
       var result = await ApiClient.database.createDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.PROPERTY_COLLECTION_ID,
           documentId: newProperty.id,
           data: Property.toJson(newProperty));
       return Property.fromJson(result.data);
@@ -186,8 +179,8 @@ class Property {
       if (mbitPerSecond != null) updateJson['mbitPerSecond'] = mbitPerSecond;
 
       var result = await ApiClient.database.updateDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.PROPERTY_COLLECTION_ID,
           documentId: propertyId,
           data: updateJson);
 
@@ -204,8 +197,8 @@ class Property {
     try {
       //TODO: delete files associated with property
       await ApiClient.database.deleteDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.PROPERTY_COLLECTION_ID,
           documentId: propertyId);
       return true;
     } catch (error) {

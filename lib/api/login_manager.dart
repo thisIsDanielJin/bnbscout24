@@ -6,14 +6,7 @@ import 'package:bnbscout24/utils/snackbar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-final String API_BASE_URL = 'https://god-did.de/v1';
-final String LANDLORD_TEAM_ID = '67a6333d562e8cfa48bd';
-final String PROJECT_ID = '6780ee1a896fed0b8da7';
-//Note: Obviously, storing API Keys in the frontend is incredibly stupid and a smarter solution should be found to achieve the upgrade functionality.
-//This key only grants permission to create team memberships.
-final String LANDLORD_UPGRADE_API_KEY =
-    'd8f2582ac8444cc75531d743a6d71f19d5f437bb6247cfe8b93f613e74353bf2831815a574f01857192d92896e2823030f49cef029369ee0f1879317990d4e1619a235368c650e5424ae3f901b36bfff5b683c75d22f2464df9fbea0c325786f847638e0134ae42f88023ba63c18ec790f1b1e11d05681933c6e9e6f96fc3401';
+import 'package:bnbscout24/constants/config.dart';
 
 class LoginManager extends ChangeNotifier {
   models.User? _loggedInUser;
@@ -42,7 +35,7 @@ class LoginManager extends ChangeNotifier {
     try {
       //user is only allowed to fetch this endpoint if he is member of the landlord team
       //TODO: is there a better way to solve this? maybe using User prefs?
-      await ApiClient.teams.get(teamId: LANDLORD_TEAM_ID);
+      await ApiClient.teams.get(teamId: Config.LANDLORD_TEAM_ID);
       _instance._isLandlord = true;
     } catch (error) {
       print(error);
@@ -112,11 +105,12 @@ class LoginManager extends ChangeNotifier {
   static Future<void> doLandlordUpgrade() async {
     try {
       final response = await http.post(
-          Uri.parse('$API_BASE_URL/teams/$LANDLORD_TEAM_ID/memberships'),
+          Uri.parse(
+              '${Config.API_BASE_URL}/teams/${Config.LANDLORD_TEAM_ID}/memberships'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
-            'X-Appwrite-Project': PROJECT_ID,
-            'X-Appwrite-Key': LANDLORD_UPGRADE_API_KEY,
+            'X-Appwrite-Project': Config.PROJECT_ID,
+            'X-Appwrite-Key': Config.LANDLORD_UPGRADE_API_KEY,
           },
           body: jsonEncode(<String, dynamic>{
             'email': _instance._loggedInUser?.email,

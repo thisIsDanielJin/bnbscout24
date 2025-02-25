@@ -18,26 +18,30 @@ class BookingHistory extends StatefulWidget {
 class _BookingHistoryState extends State<BookingHistory> {
   late List<Property?> bookingHistory = [];
 
+  @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero,() {
     _loadCardData();
+    });
   }
 
   Future<void> _loadCardData() async {
-    final loginManager = Provider.of<LoginManager>(context);
+    final loginManager = Provider.of<LoginManager>(context, listen: false);
       try {
         List<Booking>? data =
         await Booking.listBookings().then((props) => props ?? []);
-        setState(() {
-          data = data?.where((booking) => booking.userId == loginManager.loggedInUser?.$id).toList();
+        print(data?.length ?? -1);
+        data = data?.where((booking) => booking.userId == loginManager.loggedInUser?.$id).toList();
+        print(data?.length ?? -1);
+        for(final booking in data!){
+          bookingHistory.add(await Property.getPropertyById(booking.propertyId));
+        }
 
-        setState(() async {
-          for(final booking in data!){
-           bookingHistory.add(await Property.getPropertyById(booking.propertyId));
-          }
-           // Initialize filtered data with all data
+        setState(() {
+          bookingHistory = [...bookingHistory];
         });
-      });
+
       }catch (e) {
         debugPrint('Error loading card data: $e');
       }

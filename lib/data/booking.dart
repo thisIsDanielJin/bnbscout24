@@ -92,6 +92,7 @@ class Booking {
           data: Booking.toJson(newBooking));
       return Booking.fromJson(result.data);
     } catch (error) {
+      print(error);
       if (error is AppwriteException) {
         SnackbarService.showError('${error.message} (${error.code})');
       }

@@ -196,13 +196,15 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
               foregroundColor: ColorPalette.white,
               padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
             ),
-            onPressed: () {
+            onPressed: () async{
               if (_selectedStartDay != null && _selectedEndDay != null) {
                 Booking newBooking = Booking(propertyId: widget.propertyId, userId: loginManager.loggedInUser!.$id, status: "confirmed", startDate: _selectedStartDay, endDate: _selectedEndDay);
-                Booking.createBooking(newBooking);
+                Booking? booking = await Booking.createBooking(newBooking);
                 print('Selected: $_selectedStartDay to $_selectedEndDay');
-                print(newBooking.userId);
-                print(newBooking);
+                if (booking == null) {
+                  print("Error creating booking, aborting :/");
+                  return;
+                }
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ConfirmationBottomSheet()),

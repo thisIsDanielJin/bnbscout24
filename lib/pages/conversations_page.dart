@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:bnbscout24/api/login_manager.dart';
 import 'package:bnbscout24/components/conversation_item.dart';
 import 'package:bnbscout24/components/page_base.dart';
+import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/data/message.dart';
 import 'package:bnbscout24/data/property.dart';
 import 'package:bnbscout24/pages/conversation_page.dart';
@@ -31,6 +32,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
     super.initState();
     Future.delayed(Duration.zero,() {
       realtimeSubscription = Message.subscribeMessages();
+      
       realtimeSubscription?.stream.listen((msg) {
         loadData();
       }); 
@@ -90,7 +92,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                   },
                   imageUrl: (pm.property.pictureIds?.isNotEmpty ?? false) ?
                       Property.generateImageUrls(pm.property)?.first ?? ""
-                      : "https://media.istockphoto.com/id/931643150/vector/picture-icon.jpg?s=612x612&w=0&k=20&c=St-gpRn58eIa8EDAHpn_yO4CZZAnGD6wKpln9l3Z3Ok="))
+                      : Constants.unknownImageUrl))
               .toList()
         ));
   }

@@ -1,6 +1,5 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
-import 'package:appwrite/realtime_browser.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,7 +61,8 @@ class Message {
   //TODO: maybe make use of snackbar optional and return error object instead
 
   static RealtimeSubscription subscribeMessages() {
-    return  Realtime(ApiClient.database.client).subscribe(["databases.${DB_ID}.collections.${COLLECTION_ID}.documents"]);
+    return Realtime(ApiClient.database.client).subscribe(
+        ["databases.${DB_ID}.collections.${COLLECTION_ID}.documents"]);
   }
 
   static void parseMessagesToConvos(List<Document> documents, List<MessageConversation> conversations, String? propertyId, String? partnerId, String Function(Message) getChatPartnerId) {
@@ -151,13 +151,11 @@ class Message {
     }
   }
 
-  static Future<Message?> updateBooking(
-    String messageId, {
-    String? propertyId,
-    String? senderId,
-    String? receiverId,
-    String? message
-  }) async {
+  static Future<Message?> updateBooking(String messageId,
+      {String? propertyId,
+      String? senderId,
+      String? receiverId,
+      String? message}) async {
     try {
       //TODO: optimize this
       var updateJson = {};

@@ -13,7 +13,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -47,11 +46,9 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
-
   Future<void> _loadData() async {
     try {
       final List<Booking>? bookings = await Booking.listBookings();
-
 
       final List<Property>? data =
           await Property.listProperties().then((props) => props ?? []);
@@ -69,7 +66,8 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  bool isOverlapping(DateTime start1, DateTime end1, DateTime start2, DateTime end2) {
+  bool isOverlapping(
+      DateTime start1, DateTime end1, DateTime start2, DateTime end2) {
     return start1.isBefore(end2) && start2.isBefore(end1);
   }
 
@@ -84,24 +82,38 @@ class _SearchPageState extends State<SearchPage> {
 
     String? priceInterval = prefs.getString(FilterPage.KEY_PRICE_INTERVAL);
     DateTime? fromDate =
-          DateTime.tryParse(prefs.getString(FilterPage.KEY_FROM_DATE) ?? "");
-    DateTime? toDate = DateTime.tryParse(prefs.getString(FilterPage.KEY_TO_DATE) ?? "");
-
+        DateTime.tryParse(prefs.getString(FilterPage.KEY_FROM_DATE) ?? "");
+    DateTime? toDate =
+        DateTime.tryParse(prefs.getString(FilterPage.KEY_TO_DATE) ?? "");
 
     List<Property>? filteredProperties = input?.where((property) {
       // get daily price for calc
       bool priceCond = true;
       if (priceInterval != null && (priceMin != null || priceMax != null)) {
-        double propDailyPriceFactor = (property.priceInterval == "Daily" ? 1 : (property.priceInterval == "Weekly" ? 7 : 30));
-        double filterDailyPriceFactor = (priceInterval == "Daily" ? 1 : (priceInterval == "Weekly" ? 7 : 30));
-        priceCond = (priceMin == null || (priceMin / filterDailyPriceFactor) < (property.priceIntervalCents / propDailyPriceFactor)) &&
-                      (priceMax == null || (priceMax / filterDailyPriceFactor) > (property.priceIntervalCents / propDailyPriceFactor));
+        double propDailyPriceFactor = (property.priceInterval == "Daily"
+            ? 1
+            : (property.priceInterval == "Weekly" ? 7 : 30));
+        double filterDailyPriceFactor = (priceInterval == "Daily"
+            ? 1
+            : (priceInterval == "Weekly" ? 7 : 30));
+        priceCond = (priceMin == null ||
+                (priceMin / filterDailyPriceFactor) <
+                    (property.priceIntervalCents / propDailyPriceFactor)) &&
+            (priceMax == null ||
+                (priceMax / filterDailyPriceFactor) >
+                    (property.priceIntervalCents / propDailyPriceFactor));
       }
 
-      bool areaCond = (areaMin == null || areaMin < property.squareMetres) && (areaMax == null || areaMax > property.squareMetres);
-      
+      bool areaCond = (areaMin == null || areaMin < property.squareMetres) &&
+          (areaMax == null || areaMax > property.squareMetres);
+
       bool availabilityCond = bookings.where((booking) {
-        return booking.propertyId  == property.id && isOverlapping(fromDate ?? DateTime.fromMicrosecondsSinceEpoch(0), toDate ?? DateTime.fromMicrosecondsSinceEpoch(0), booking.startDate!, booking.endDate!);
+        return booking.propertyId == property.id &&
+            isOverlapping(
+                fromDate ?? DateTime.fromMicrosecondsSinceEpoch(0),
+                toDate ?? DateTime.fromMicrosecondsSinceEpoch(0),
+                booking.startDate!,
+                booking.endDate!);
       }).isEmpty;
 
       return priceCond && areaCond && availabilityCond;
@@ -112,37 +124,36 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Property>? _performSearch(List<Property>? input) {
     return input?.where((item) {
-        final streetName = item.address.toString().toLowerCase();
-        final title = item.name.toString().toLowerCase();
-        final searchTerm = _addressController.text.toLowerCase();
+      final streetName = item.address.toString().toLowerCase();
+      final title = item.name.toString().toLowerCase();
+      final searchTerm = _addressController.text.toLowerCase();
 
-        // Basic text search
-        bool matchesSearch =
-            streetName.contains(searchTerm) || title.contains(searchTerm);
+      // Basic text search
+      bool matchesSearch =
+          streetName.contains(searchTerm) || title.contains(searchTerm);
 
-        // Radius check if position and radius are available
-        if (matchesSearch &&
-            _currentPosition != null &&
-            _radiusController.text.isNotEmpty) {
-          final itemLat = item.geoLat ?? 0.0;
-          final itemLng = item.geoLon ?? 0.0;
-          final distance = Geolocator.distanceBetween(
-            _currentPosition!.latitude,
-            _currentPosition!.longitude,
-            itemLat,
-            itemLng,
-          );
-          // Convert radius from km to meters
-          final radiusInMeters = double.parse(_radiusController.text) * 1000;
-          return distance <= radiusInMeters;
-        }
+      // Radius check if position and radius are available
+      if (matchesSearch &&
+          _currentPosition != null &&
+          _radiusController.text.isNotEmpty) {
+        final itemLat = item.geoLat ?? 0.0;
+        final itemLng = item.geoLon ?? 0.0;
+        final distance = Geolocator.distanceBetween(
+          _currentPosition!.latitude,
+          _currentPosition!.longitude,
+          itemLat,
+          itemLng,
+        );
+        // Convert radius from km to meters
+        final radiusInMeters = double.parse(_radiusController.text) * 1000;
+        return distance <= radiusInMeters;
+      }
 
-        return matchesSearch;
-      }).toList();
+      return matchesSearch;
+    }).toList();
   }
 
-  void _performFilterAndSearch() async{
-    
+  void _performFilterAndSearch() async {
     List<Property>? filteredData = await _performFilter(cardData);
 
     if (_addressController.text.isEmpty) {
@@ -181,7 +192,7 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       IconButton(
                         icon: const FaIcon(FontAwesomeIcons.sliders),
-                        onPressed: () async{
+                        onPressed: () async {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(

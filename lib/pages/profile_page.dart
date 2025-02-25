@@ -59,12 +59,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               );
                             }),
                         SquareArrowButton(
-                            text: "Booking History", onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => BookingHistory()),
-                          );
-                        }),
+                            text: "Booking History",
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BookingHistory()),
+                              );
+                            }),
                         SquareArrowButton(
                             text: "Logout",
                             onPressed: () => loginManager.logout()),
@@ -81,7 +83,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   width: double.infinity,
                                   child: ColorButton(
                                       text: "Become a landlord",
-                                      onPressed: () {})),
+                                      onPressed: () =>
+                                          LoginManager.doLandlordUpgrade())),
                             )
                           ],
                         ))

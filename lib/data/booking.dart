@@ -2,13 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
-
-//TODO: move this into env?
-final String BASE_URL = 'https://god-did.de';
-final String PROJECT_ID = '6780ee1a896fed0b8da7';
-final String DB_ID = '6780faa636107ddbb899';
-//this is only valid for booking objects
-final String COLLECTION_ID = '67a4f2cd96ff4e22d5f6';
+import 'package:bnbscout24/constants/config.dart';
 
 class Booking {
   final String id;
@@ -53,19 +47,16 @@ class Booking {
   static Future<List<Booking>?> listBookings() async {
     try {
       List<Booking> bookings = [];
-      var result = await ApiClient.database
-          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID);
-
+      var result = await ApiClient.database.listDocuments(
+          databaseId: Config.DB_ID, collectionId: Config.BOOKING_COLLECTION_ID);
 
       for (Document doc in result.documents) {
         try {
           bookings.add(Booking.fromJson(doc.data));
-        }
-        catch(e) {
+        } catch (e) {
           print("Error parsing booking ${e}");
         }
       }
-  
 
       print(bookings);
 
@@ -83,8 +74,8 @@ class Booking {
   static Future<Booking?> getBookingById(String bookingId) async {
     try {
       var result = await ApiClient.database.getDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.BOOKING_COLLECTION_ID,
           documentId: bookingId);
       return Booking.fromJson(result.data);
     } catch (error) {
@@ -98,8 +89,8 @@ class Booking {
   static Future<Booking?> createBooking(Booking newBooking) async {
     try {
       var result = await ApiClient.database.createDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.BOOKING_COLLECTION_ID,
           documentId: newBooking.id,
           data: Booking.toJson(newBooking));
       return Booking.fromJson(result.data);
@@ -130,8 +121,8 @@ class Booking {
       if (endDate != null) updateJson['endDate'] = endDate;
       print(updateJson);
       var result = await ApiClient.database.updateDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.BOOKING_COLLECTION_ID,
           documentId: bookingId,
           data: updateJson);
 
@@ -149,8 +140,8 @@ class Booking {
     try {
       //TODO: delete files associated with property
       await ApiClient.database.deleteDocument(
-          databaseId: DB_ID,
-          collectionId: COLLECTION_ID,
+          databaseId: Config.DB_ID,
+          collectionId: Config.BOOKING_COLLECTION_ID,
           documentId: bookingId);
       return true;
     } catch (error) {

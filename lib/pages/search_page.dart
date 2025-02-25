@@ -9,7 +9,6 @@ import 'package:bnbscout24/pages/filter_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -194,21 +193,47 @@ class _SearchPageState extends State<SearchPage> {
                             return Column(
                               children: [
                                 GestureDetector(
-                                  onTap:(){
+                                  onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => DetailsPage(priceInterval: item.priceInterval, propertyId: item.id, pictureIds: item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item) : [], title: item.name.toString() ?? '', rentPerDay: item.priceIntervalCents ?? 0, description: item.description ?? '', street: item.address.toString() ?? '', area: item.squareMetres.toInt() ?? 0, deskAmount: item.roomAmount.toInt() ?? 0, networkSpeed:  item.mbitPerSecond?.toInt() ?? 0)),
+                                      MaterialPageRoute(
+                                          builder: (context) => DetailsPage(
+                                              priceInterval: item.priceInterval,
+                                              propertyId: item.id,
+                                              pictureIds: item
+                                                      .pictureIds!.isNotEmpty
+                                                  ? Property.generateImageUrls(
+                                                      item)
+                                                  : [],
+                                              title: item.name.toString() ?? '',
+                                              rentPerDay:
+                                                  item.priceIntervalCents ?? 0,
+                                              description:
+                                                  item.description ?? '',
+                                              street:
+                                                  item.address.toString() ?? '',
+                                              area: item.squareMetres.toInt() ??
+                                                  0,
+                                              deskAmount:
+                                                  item.roomAmount.toInt() ?? 0,
+                                              networkSpeed:
+                                                  item.mbitPerSecond?.toInt() ??
+                                                      0)),
                                     );
                                   },
                                   child: HorizontalCard(
-                                    priceInterval: item!.priceInterval ,
-                                    imageUrl:  item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item)?.elementAt(0) : '',
+                                    priceInterval: item!.priceInterval,
+                                    imageUrl: item.pictureIds!.isNotEmpty
+                                        ? Property.generateImageUrls(item)
+                                            ?.elementAt(0)
+                                        : '',
                                     title: item.name.toString() ?? '',
                                     pricePerMonth: item.priceIntervalCents ?? 0,
                                     streetName: item.address.toString() ?? '',
                                     area: item.squareMetres.toInt() ?? 0,
                                     deskAmount: item.roomAmount.toInt() ?? 0,
-                                    networkSpeed: item.mbitPerSecond?.toInt() ?? 0,
+                                    networkSpeed:
+                                        item.mbitPerSecond?.toInt() ?? 0,
                                   ),
                                 ),
                                 const SizedBox(height: 10),

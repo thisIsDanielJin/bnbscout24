@@ -42,23 +42,31 @@ class HorizontalCard extends StatelessWidget {
               borderRadius: const BorderRadius.horizontal(
                 left: Radius.circular(16),
               ),
-              child: Image.network(
-                imageUrl!,
-                height: double.infinity,
+              child: Container(
                 width: 120,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.error, size: 50, color: Colors.grey),
-                ),
-                loadingBuilder: (context, child, loadingProgress) =>
-                    loadingProgress == null
-                        ? child
-                        : Container(
-                            color: Colors.grey[300],
-                            child: const Center(
-                                child: CircularProgressIndicator()),
-                          ),
+                height: 180,
+                color: Colors.grey[300],
+                child: imageUrl != null && imageUrl!.isNotEmpty
+                    ? Image.network(
+                        imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                          Icons.error,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
+                        loadingBuilder: (context, child, loadingProgress) =>
+                            loadingProgress == null
+                                ? child
+                                : const Center(
+                                    child: CircularProgressIndicator()),
+                      )
+                    : const Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
               ),
             ),
             Expanded(
@@ -119,7 +127,7 @@ class HorizontalCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                           Text(
+                          Text(
                             priceInterval,
                             style: TextStyle(
                               fontSize: 12,
@@ -138,9 +146,11 @@ class HorizontalCard extends StatelessWidget {
       ),
     );
   }
- String Interval(){
+
+  String Interval() {
     return "per${this.priceInterval}";
- }
+  }
+
   Widget _buildInfoItem(IconData icon, String text) {
     return Row(
       mainAxisSize: MainAxisSize.min,

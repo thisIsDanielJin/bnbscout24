@@ -22,7 +22,7 @@ class PropertyCard extends StatelessWidget {
                       priceInterval: item!.priceInterval ,
                       imageUrl:  item.pictureIds!.isNotEmpty ? Property.generateImageUrls(item)?.elementAt(0) : Constants.unknownImageUrl,
                       title: item.name.toString() ?? '',
-                      pricePerMonth: item.priceIntervalCents ?? 0,
+                      pricePerIntervalCents: item.priceIntervalCents ?? 0,
                       streetName: item.address.toString() ?? '',
                       area: item.squareMetres.toInt() ?? 0,
                       deskAmount: item.roomAmount.toInt() ?? 0,

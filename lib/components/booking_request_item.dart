@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 class BookingRequestItem extends StatelessWidget {
   final String title;
   final String imageUrl;
+  final String status;
   final DateTime startDate;
   final DateTime endDate;
   final VoidCallback onAccept;
@@ -16,6 +17,7 @@ class BookingRequestItem extends StatelessWidget {
     super.key,
     required this.title,
     required this.imageUrl,
+    required this.status,
     required this.startDate,
     required this.endDate,
     required this.onAccept,

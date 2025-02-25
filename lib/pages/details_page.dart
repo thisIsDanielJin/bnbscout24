@@ -8,28 +8,28 @@ import '../components/book_now_calendar.dart';
 
 
 class DetailsPage extends StatefulWidget {
-  final List<String> pictureIds;
-  final String imageUrl;
+  final bool showBookButton;
+  final String priceInterval;
+  final String propertyId;
+  final List<String>? pictureIds;
   final String title;
-  final double rentPerDay;
+  final int rentPerDay;
   final String description;
   final String street;
-  final String city;
-  final int zipCode;
   final int area;
   final int deskAmount;
   final int networkSpeed;
 
   DetailsPage({
     super.key,
+    this.showBookButton = true,
+    required this.priceInterval,
+    required this.propertyId,
     required this.pictureIds,
-    required this.imageUrl,
     required this.title,
     required this.rentPerDay,
     required this.description,
     required this.street,
-    required this.city,
-    required this.zipCode,
     required this.area,
     required this.deskAmount,
     required this.networkSpeed,
@@ -39,31 +39,19 @@ class DetailsPage extends StatefulWidget {
   _DetailsPageState createState() => _DetailsPageState();
 }
 class _DetailsPageState extends State<DetailsPage> {
+   List<Widget> images= [];
 
-  final List<Map<String, dynamic>> attributes = [
-    {"text": "Attribute 1", "icon": Icons.star},
-    {"text": "Attribute 2", "icon": Icons.euro},
-    {"text": "Attribute 3", "icon": Icons.check},
-    {"text": "Attribute 4", "icon": Icons.bolt},
-    {"text": "Attribute 5", "icon": Icons.eco},
-  ];
-  List<Widget> images = [
-    Image(image: AssetImage('images/photo.jpg'),
-      height: 100,
-    ),
-    Image(image: AssetImage('images/photo1.jpg'),
-      height: 100,
-    ),
-    Image(image: AssetImage('images/photo2.jpg'),
-      height: 100,
-    )
-  ];
-
+  @override
+  void initState(){
+    super.initState();
+    images = buildImages();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: ColorPalette.white,
         title: Text('Booking Details'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: Colors.black),
@@ -82,38 +70,16 @@ class _DetailsPageState extends State<DetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Photo Carousel
-                  SizedBox(
-                    height: 200,
-                    child: Stack(
-                      children: [
-                        CarouselSlider(
-                          items: List<Widget>.from(widget.pictureIds.map((picture) => images.add(Image(image: AssetImage(picture),height: 100)))),
-                          options: CarouselOptions(
-                            height: 150,
-                            aspectRatio: 16 / 9,
-                            viewportFraction: 0.8,
-                            initialPage: 0,
-                            enableInfiniteScroll: false,
-                            reverse: false,
-                            autoPlay: false,
-                            autoPlayInterval: Duration(seconds: 3),
-                            autoPlayAnimationDuration: Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            enlargeCenterPage: true,
-                            enlargeFactor: 0.3,
-                            scrollDirection: Axis.horizontal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Carousel(),
                   SizedBox(height: 24),
 
                   // Information Section
                   Center(child: _buildSectionTitle('Information')),
                   SizedBox(height: 8),
+                  _buildInfoItem('Property', widget.title, Icons.house),
                   _buildInfoItem('Address', widget.street, Icons.location_on),
-                  _buildInfoRow('Area (m²)', widget.area.toString(), Icons.square_foot, 'Rental Price', widget.rentPerDay.toString(), Icons.attach_money),
+                  _buildInfoRow('Area (m²)', widget.area.toString(), Icons.square_foot, 'Price ${widget.priceInterval}', widget.rentPerDay.toString(), Icons.attach_money),
+                  _buildInfoRow('Rooms', widget.deskAmount.toString(), Icons.room, 'Mbit/s', widget.networkSpeed.toString(), Icons.wifi),
                   Divider(height: 40, thickness: 1),
 
                   // Description Section
@@ -130,33 +96,7 @@ class _DetailsPageState extends State<DetailsPage> {
           ),
 
           // Static "Book Now" Button
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorPalette.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  padding: EdgeInsets.all(Sizes.paddingBig),
-                  elevation: 0, // No shadow
-                ),
-                onPressed: () {_showBookingBottomSheet(context);},
-                child: Text(
-                  'Book Now',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          Button()
         ],
       ),
     );
@@ -167,9 +107,41 @@ class _DetailsPageState extends State<DetailsPage> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return BookingBottomSheet();
+        return BookingBottomSheet(propertyId: widget.propertyId);
       },
     );
+  }
+  Widget Button(){
+    if(widget.showBookButton){
+      return Positioned(
+        left: 16,
+        right: 16,
+        bottom: 16,
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorPalette.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+              ),
+              padding: EdgeInsets.all(Sizes.paddingBig),
+              elevation: 0, // No shadow
+            ),
+            onPressed: () {_showBookingBottomSheet(context);},
+            child: Text(
+              'Book Now',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return SizedBox(height: 1,);
   }
 
   Widget _buildSectionTitle(String title) {
@@ -224,6 +196,41 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  Widget Carousel(){
+    if(widget.pictureIds!.isNotEmpty) {
+      return SizedBox(
+        height: 200,
+        child: Stack(
+          children: [
+            CarouselSlider(
+              items: images,
+              options: CarouselOptions(
+                height: 150,
+                aspectRatio: 16 / 9,
+                viewportFraction: 0.8,
+                initialPage: 0,
+                enableInfiniteScroll: false,
+                reverse: false,
+                autoPlay: false,
+                autoPlayInterval: Duration(seconds: 3),
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: true,
+                enlargeFactor: 0.3,
+                scrollDirection: Axis.horizontal,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return SizedBox(height: 0,);
+  }
+  List<Widget> buildImages(){
+    return List<Widget>.from(widget.pictureIds!.map((picture) =>
+        Image(image: NetworkImage(picture), height: 100)));
+
+  }
   Widget _buildInfoRow(String label1, String value1, IconData icon1, String label2, String value2, IconData icon2) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),

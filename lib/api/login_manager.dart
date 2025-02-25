@@ -84,6 +84,21 @@ class LoginManager extends ChangeNotifier {
     }
   }
 
+  static Future<void> changePassword(String oldPassword, String newPassword,
+      {VoidCallback? successCallback}) async {
+    try {
+      await ApiClient.account
+          .updatePassword(password: newPassword, oldPassword: oldPassword);
+      SnackbarService.showSuccess('Password changed.');
+      successCallback?.call();
+    } catch (error) {
+      if (error is AppwriteException) {
+        SnackbarService.showError('${error.message} (${error.code})');
+      }
+      print(error);
+    }
+  }
+
   static final LoginManager _instance = LoginManager._internal();
   LoginManager._internal();
   factory LoginManager() => _instance;

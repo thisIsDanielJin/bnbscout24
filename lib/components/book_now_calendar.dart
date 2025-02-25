@@ -1,8 +1,29 @@
+import 'package:appwrite/appwrite.dart';
+import 'package:bnbscout24/components/confirmation_bottom_sheet.dart';
 import 'package:bnbscout24/constants/constants.dart';
+import 'package:bnbscout24/data/booking.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:bnbscout24/api/login_manager.dart';
+import 'package:provider/provider.dart';
 
 class BookingBottomSheet extends StatefulWidget {
+  final String id;
+  final String propertyId;
+  final String? userId;
+  final String? status;
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  BookingBottomSheet(
+  {required this.propertyId,
+  this.userId,
+  this.status,
+  this.startDate,
+  this.endDate,
+  String? id})
+: id = id ?? ID.unique();
+
   @override
   _BookingBottomSheetState createState() => _BookingBottomSheetState();
 }
@@ -12,15 +33,30 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedStartDay;
   DateTime? _selectedEndDay;
-  final Set<DateTime> _unavailableDays = {
-    DateTime(2025, 2, 5), // Dates at midnight (00:00:00.000)
-    DateTime(2025, 2, 6),
-    DateTime(2025, 2, 7),
-  };
+  late List<DateTime> _unavailableDays = [];
 
   final DateTime _firstDay = DateTime.utc(2023, 1, 1);
   final DateTime _lastDay = DateTime.utc(2028, 12, 31);
 
+  Future<void> _loadUnavailableDays() async {
+    try {
+      List<Booking>? data =
+      await Booking.listBookings().then((props) => props ?? []);
+      setState(() {
+      data = data?.where((booking) => booking.propertyId == widget.propertyId).toList();
+        List<DateTime> days = [];
+        for(final booking in data!){
+          for (int i = 0; i <= booking.endDate!.difference(booking.startDate!).inDays; i++) {
+            days.add(booking.startDate!.add(Duration(days: i)));
+          }
+        }; // Initialize filtered data with all data
+        _unavailableDays = days;
+          print(_unavailableDays);
+      });
+    } catch (e) {
+      debugPrint('Error loading card data: $e');
+    }
+  }
   bool _isDayAvailable(DateTime day) {
     // Check if any date in _unavailableDays is the same day (ignoring time)
     return !_unavailableDays.any((unavailableDay) => isSameDay(unavailableDay, day));
@@ -47,10 +83,12 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     _focusedDay = _focusedDay.isBefore(_firstDay)
         ? _firstDay
         : (_focusedDay.isAfter(_lastDay) ? _lastDay : _focusedDay);
+    _loadUnavailableDays();
   }
 
   @override
   Widget build(BuildContext context) {
+    final loginManager = Provider.of<LoginManager>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       padding: EdgeInsets.all(16),
@@ -160,8 +198,15 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             ),
             onPressed: () {
               if (_selectedStartDay != null && _selectedEndDay != null) {
+                Booking newBooking = Booking(propertyId: widget.propertyId, userId: loginManager.loggedInUser!.$id, status: "confirmed", startDate: _selectedStartDay, endDate: _selectedEndDay);
+                Booking.createBooking(newBooking);
                 print('Selected: $_selectedStartDay to $_selectedEndDay');
-                Navigator.pop(context);
+                print(newBooking.userId);
+                print(newBooking);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ConfirmationBottomSheet()),
+                );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Select a valid period')),

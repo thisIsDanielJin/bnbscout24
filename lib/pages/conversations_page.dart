@@ -19,7 +19,6 @@ class PropertyConversation {
 }
 
 class ConversationsPage extends StatefulWidget {
-
   const ConversationsPage({super.key});
 
   @override
@@ -32,34 +31,39 @@ class _ConversationsPageState extends State<ConversationsPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero,() {
+    Future.delayed(Duration.zero, () {
       realtimeSubscription = Message.subscribeMessages();
-      
+
       realtimeSubscription?.stream.listen((msg) {
         loadData();
-      }); 
+      });
 
       loadData();
     });
-
-    
   }
-
-
 
   void loadData() async {
     final loginManager = Provider.of<LoginManager>(context, listen: false);
 
-    List<MessageConversation>? conversations = await Message.listMessageConverstations(userId: loginManager.loggedInUser?.$id);
+    List<MessageConversation>? conversations =
+        await Message.listMessageConverstations(
+            userId: loginManager.loggedInUser?.$id);
     print(conversations);
     if (conversations != null) {
       List<PropertyConversation> mc = [];
       for (MessageConversation convo in conversations) {
-        mc.add(PropertyConversation(property: (await Property.getPropertyById(convo.propertyId))!, conversation: convo));
+        mc.add(PropertyConversation(
+            property: (await Property.getPropertyById(convo.propertyId))!,
+            conversation: convo));
       }
-      setState(() {
-        propertyMessages = mc;
-      });
+      //Note: mounted check is needed to prevent the app from crashing after landlord upgrade.
+      //TODO: why is there still data being loaded after the page was disposed?
+      //TODO: is this also happening for other pages?
+      if (mounted) {
+        setState(() {
+          propertyMessages = mc;
+        });
+      }
     }
   }
 
@@ -76,24 +80,26 @@ class _ConversationsPageState extends State<ConversationsPage> {
         child: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: Sizes.navBarFullSize),
           child: Column(
-          spacing: Sizes.paddingRegular,
-          children: propertyMessages
-              .map((pm) => ConversationItem(
-                  title: pm.property.name,
-                  description: pm.conversation.messages.last.message,
-                  isNew: pm.conversation.isNew,
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => ConversationPage(property: pm.property, chatPartnerId: pm.conversation.chatPartnerId,),
+              spacing: Sizes.paddingRegular,
+              children: propertyMessages
+                  .map((pm) => ConversationItem(
+                      title: pm.property.name,
+                      description: pm.conversation.messages.last.message,
+                      isNew: pm.conversation.isNew,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ConversationPage(
+                                property: pm.property,
+                                chatPartnerId: pm.conversation.chatPartnerId,
+                              ),
                             ));
-                  },
-                  imageUrl: (pm.property.pictureIds?.isNotEmpty ?? false) ?
-                      Property.generateImageUrls(pm.property)?.first ?? ""
-                      : Constants.unknownImageUrl))
-              .toList()
-        ),
-        )
-        
-        );
+                      },
+                      imageUrl: (pm.property.pictureIds?.isNotEmpty ?? false)
+                          ? Property.generateImageUrls(pm.property)?.first ?? ""
+                          : Constants.unknownImageUrl))
+                  .toList()),
+        ));
   }
 }

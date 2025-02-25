@@ -1,5 +1,4 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/realtime_browser.dart';
 import 'package:bnbscout24/api/client.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
 
@@ -28,7 +27,6 @@ class Message {
       : id = id ?? ID.unique();
 
   static fromJson(Map<String, dynamic> json, DateTime created) {
-
     return Message(
         propertyId: json['propertyId']['\$id'],
         senderId: json['senderId'],
@@ -51,35 +49,43 @@ class Message {
   //TODO: maybe make use of snackbar optional and return error object instead
 
   static RealtimeSubscription subscribeMessages() {
-    return  Realtime(ApiClient.database.client).subscribe(["databases.${DB_ID}.collections.${COLLECTION_ID}.documents"]);
+    return Realtime(ApiClient.database.client).subscribe(
+        ["databases.${DB_ID}.collections.${COLLECTION_ID}.documents"]);
   }
 
-  static Future<List<Message>?> listMessages({ String? userId, String? propertyId }) async {
+  static Future<List<Message>?> listMessages(
+      {String? userId, String? propertyId}) async {
     try {
       List<Message> messages = [];
 
-      List<String> senderQuery = [Query.equal("senderId", [userId])];
+      List<String> senderQuery = [
+        Query.equal("senderId", [userId])
+      ];
       if (propertyId != null) {
         senderQuery.add(Query.equal("propertyId", propertyId));
       }
-      var result = await ApiClient.database
-          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID, queries: senderQuery);
-      messages
-          .addAll(result.documents.map((doc) => Message.fromJson(doc.data, DateTime.parse(doc.$createdAt))));
+      var result = await ApiClient.database.listDocuments(
+          databaseId: DB_ID, collectionId: COLLECTION_ID, queries: senderQuery);
+      messages.addAll(result.documents.map(
+          (doc) => Message.fromJson(doc.data, DateTime.parse(doc.$createdAt))));
 
-      List<String> receiverQuery = [Query.equal("receiverId", [userId])];
+      List<String> receiverQuery = [
+        Query.equal("receiverId", [userId])
+      ];
       if (propertyId != null) {
         senderQuery.add(Query.equal("propertyId", propertyId));
       }
-      var result2 = await ApiClient.database
-          .listDocuments(databaseId: DB_ID, collectionId: COLLECTION_ID, queries: receiverQuery);
-      messages
-          .addAll(result2.documents.map((doc) => Message.fromJson(doc.data, DateTime.parse(doc.$createdAt))));
+      var result2 = await ApiClient.database.listDocuments(
+          databaseId: DB_ID,
+          collectionId: COLLECTION_ID,
+          queries: receiverQuery);
+      messages.addAll(result2.documents.map(
+          (doc) => Message.fromJson(doc.data, DateTime.parse(doc.$createdAt))));
 
-      
       // Manually filter bc appearenty it is not supported by appwrite to query releations...
       if (propertyId != null) {
-        messages = messages.where((msg) => msg.propertyId == propertyId).toList();
+        messages =
+            messages.where((msg) => msg.propertyId == propertyId).toList();
       }
       messages.sort((msg1, msg2) => msg1.created.compareTo(msg2.created));
 
@@ -123,13 +129,11 @@ class Message {
     }
   }
 
-  static Future<Message?> updateBooking(
-    String messageId, {
-    String? propertyId,
-    String? senderId,
-    String? receiverId,
-    String? message
-  }) async {
+  static Future<Message?> updateBooking(String messageId,
+      {String? propertyId,
+      String? senderId,
+      String? receiverId,
+      String? message}) async {
     try {
       //TODO: optimize this
       var updateJson = {};

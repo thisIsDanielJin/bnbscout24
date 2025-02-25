@@ -1,5 +1,4 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/realtime_browser.dart';
 
 class ApiClient {
   Client get _client {

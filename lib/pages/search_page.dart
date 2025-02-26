@@ -1,13 +1,8 @@
-import 'dart:convert';
 import 'package:bnbscout24/components/custom_text_input.dart';
 import 'package:bnbscout24/components/property_card.dart';
-import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/data/booking.dart';
 import 'package:bnbscout24/data/property.dart';
-import 'package:bnbscout24/pages/details_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:bnbscout24/components/office_result_card.dart';
 import 'package:bnbscout24/pages/filter_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -216,27 +211,17 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        flex: 1,
-                        child: TextField(
-                          controller: _radiusController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'Radius (km)',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
+                          flex: 1,
+                          child: CustomTextInput(
+                            controller: _radiusController,
+                            hint: 'Radius (km)',
+                            keyboardType: TextInputType.number,
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.my_location),
                               onPressed:
                                   () {}, // Empty function - button does nothing
                             ),
-                          ),
-                        ),
-                      ),
+                          )),
                     ],
                   ),
                   if (_currentPosition != null)
@@ -262,8 +247,8 @@ class _SearchPageState extends State<SearchPage> {
                       : ListView.builder(
                           padding: const EdgeInsets.all(8.0),
                           itemCount: _filteredCardData?.length,
-                          itemBuilder: (context, index) => PropertyCard(item: _filteredCardData![index])
-                        ),
+                          itemBuilder: (context, index) =>
+                              PropertyCard(item: _filteredCardData![index])),
             ),
           ],
         ),

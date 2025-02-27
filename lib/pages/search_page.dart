@@ -1,5 +1,6 @@
 import 'package:bnbscout24/components/custom_text_input.dart';
 import 'package:bnbscout24/components/property_card.dart';
+import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/data/booking.dart';
 import 'package:bnbscout24/data/property.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,9 @@ import 'package:bnbscout24/pages/filter_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../components/page_base.dart';
+import '../constants/sizes.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -17,8 +21,8 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   List<Booking> bookings = [];
-  List<Property>? cardData = [];
-  List<Property>? _filteredCardData = [];
+  List<Property>? cardData = null;
+  List<Property>? _filteredCardData = null;
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _radiusController = TextEditingController();
   Position? _currentPosition;
@@ -214,103 +218,84 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Search',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.sliders),
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const FilterPage(),
-                            ),
-                          );
-                          _performFilterAndSearch();
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: CustomTextInput(
-                          controller: _addressController,
-                          hint: 'Address',
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                          flex: 1,
-                          child: CustomTextInput(
-                            controller: _radiusController,
-                            hint: 'Radius (km)',
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              if (value.isNotEmpty) {
-                                double? radius = double.tryParse(value);
-                                if (radius == null || radius < 0) {
-                                  _radiusController.text = '';
-                                } else {
-                                  _performFilterAndSearch();
-                                }
-                              }
-                            },
-                            suffixIcon: IconButton(
-                              icon: const Icon(Icons.my_location),
-                              onPressed: _getCurrentLocation,
-                            ),
-                          )),
-                    ],
-                  ),
-                  if (_currentPosition != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        'Current position: ${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+    return PageBase(
+      title: "Search",
+      barWidgets: [IconButton(
+        icon: const FaIcon(FontAwesomeIcons.sliders),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const FilterPage(),
             ),
+          );
+          _performFilterAndSearch();
+        },
+      ),],
+      child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: CustomTextInput(
+                    controller: _addressController,
+                    hint: 'Address',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                    flex: 1,
+                    child: CustomTextInput(
+                      controller: _radiusController,
+                      hint: 'Radius (km)',
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          double? radius = double.tryParse(value);
+                          if (radius == null || radius < 0) {
+                            _radiusController.text = '';
+                          } else {
+                            _performFilterAndSearch();
+                          }
+                        }
+                      },
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.my_location),
+                        onPressed: _getCurrentLocation,
+                      ),
+                    )),
+              ],
+            ),
+            if (_currentPosition != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Current position: ${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
             Expanded(
-              child: _filteredCardData!.isEmpty &&
-                      _addressController.text.isEmpty
+              child: _filteredCardData == null
                   ? const Center(child: CircularProgressIndicator())
                   : _filteredCardData!.isEmpty
-                      ? const Center(child: Text('No results found'))
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(8.0),
-                          itemCount: _filteredCardData?.length,
-                          itemBuilder: (context, index) =>
-                              PropertyCard(item: _filteredCardData![index])),
+                  ? const Center(child: Text('No results found'))
+                  : ListView.builder(
+                  itemCount: _filteredCardData?.length,
+                  itemBuilder: (context, index) =>
+                      PropertyCard(item: _filteredCardData![index])),
             ),
           ],
-        ),
+
+
       ),
+
+
+
+
     );
   }
 }

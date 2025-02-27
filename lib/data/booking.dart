@@ -41,6 +41,12 @@ class Booking {
     return json;
   }
 
+  static RealtimeSubscription subsribeBookings() {
+    return Realtime(ApiClient.database.client).subscribe([
+      "databases.${Config.DB_ID}.collections.${Config.BOOKING_COLLECTION_ID}.documents"
+    ]);
+  }
+
   //TODO: move the following functions out of class?
   //TODO: maybe make use of snackbar optional and return error object instead
 

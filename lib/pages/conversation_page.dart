@@ -55,11 +55,9 @@ class _ConversationPageState extends State<ConversationPage> {
 
     List<Message> msgs = convo!.first.messages;
 
-    // Add all message IDs to shared prefs as read!
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Set<String> readIds = prefs.getStringList(Message.KEY_MESSAGE_READ_IDS)?.toSet() ?? Set();
-    readIds.addAll(msgs.map((msg) => msg.id));
-    prefs.setStringList(Message.KEY_MESSAGE_READ_IDS, readIds.toList());
+    for (Message msg in msgs.where((msg) => msg.receiverId == loginManager.loggedInUser!.$id && !msg.isRead)) {
+      await Message.updateMessage(msg.id, isRead: true);
+    }
 
     setState(() {
       messages = msgs;
@@ -112,7 +110,7 @@ class _ConversationPageState extends State<ConversationPage> {
             controller: messageController,
           )),
           ColorButton(text: "Send!", onPressed: () {
-            Message newMessage = Message(propertyId: widget.property.id, senderId: loginManager.loggedInUser!.$id, receiverId: widget.chatPartnerId!, message: messageController.text, created: DateTime.now());
+            Message newMessage = Message(propertyId: widget.property.id, senderId: loginManager.loggedInUser!.$id, receiverId: widget.chatPartnerId!, message: messageController.text, created: DateTime.now(), isRead: false);
             Message.createMessage(newMessage);
             messageController.clear();
           })

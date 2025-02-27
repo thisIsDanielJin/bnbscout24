@@ -52,6 +52,12 @@ class Property {
         id: json['\$id']);
   }
 
+  static RealtimeSubscription subscribeProperties() {
+    return Realtime(ApiClient.database.client).subscribe([
+      "databases.${Config.DB_ID}.collections.${Config.PROPERTY_COLLECTION_ID}.documents"
+    ]);
+  }
+
   static Map<String, dynamic> toJson(Property property) {
     Map<String, dynamic> json = {};
     json['name'] = property.name;

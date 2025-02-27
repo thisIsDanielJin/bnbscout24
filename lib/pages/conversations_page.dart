@@ -79,15 +79,16 @@ class _ConversationsPageState extends State<ConversationsPage> {
         title: "Conversations",
         child: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: Sizes.navBarFullSize),
-          child: Column(
+          child: propertyMessages.isEmpty ? Text("No conversations yet") :
+          Column(
               spacing: Sizes.paddingRegular,
               children: propertyMessages
                   .map((pm) => ConversationItem(
                       title: pm.property.name,
                       description: pm.conversation.messages.last.message,
                       isNew: pm.conversation.isNew,
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ConversationPage(
@@ -95,6 +96,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                                 chatPartnerId: pm.conversation.chatPartnerId,
                               ),
                             ));
+                        loadData();
                       },
                       imageUrl: (pm.property.pictureIds?.isNotEmpty ?? false)
                           ? Property.generateImageUrls(pm.property)?.first ?? ""

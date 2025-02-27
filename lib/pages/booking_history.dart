@@ -74,7 +74,7 @@ class _BookingHistoryState extends State<BookingHistory> {
         itemCount: bookingHistory.length,
         itemBuilder: (context, index) => Column(
           children: [
-            Text("${DateFormat("yMd").format(bookingHistory[index].booking.startDate!)} - ${DateFormat("yMd").format(bookingHistory[index].booking.endDate!)}"),
+            Text("${DateFormat("yMd").format(bookingHistory[index].booking.startDate!)} - ${DateFormat("yMd").format(bookingHistory[index].booking.endDate!)} (${bookingHistory[index].booking.status})"),
             PropertyCard(item: bookingHistory[index].property),
           ],
         )

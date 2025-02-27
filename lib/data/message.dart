@@ -24,16 +24,19 @@ class Message {
   final String senderId;
   final String receiverId;
   final String message;
+  final bool isRead;
   final DateTime created;
 
   Message(
       {required this.propertyId,
       required this.senderId,
       required this.receiverId,
+      required this.isRead,
       required this.message,
       required this.created,
       String? id})
       : id = id ?? ID.unique();
+
 
   static Message fromJson(Map<String, dynamic> json, DateTime created) {
     return Message(
@@ -41,6 +44,7 @@ class Message {
         senderId: json['senderId'],
         receiverId: json['receiverId'],
         message: json['message'],
+        isRead: json['isRead'],
         created: created,
         id: json['\$id']);
   }
@@ -51,6 +55,7 @@ class Message {
     json['senderId'] = message.senderId;
     json['receiverId'] = message.receiverId;
     json['message'] = message.message;
+    json['isRead'] = message.isRead;
     return json;
   }
 
@@ -120,16 +125,11 @@ class Message {
       parseMessagesToConvos(result2.documents, conversations, propertyId,
           partnerId, (msg) => msg.senderId);
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> readMsgs = (prefs.getStringList(KEY_MESSAGE_READ_IDS) ?? []);
       for (var convo in conversations) {
         convo.messages
             .sort((msg1, msg2) => msg1.created.compareTo(msg2.created));
 
-        convo.isNew = convo.messages.map((msg) => msg.id).any((msgId) {
-          bool contains = !readMsgs.contains(msgId);
-          return contains;
-        });
+        convo.isNew = convo.messages.any((msg) => msg.receiverId == userId && !msg.isRead);
       }
 
       return conversations;
@@ -141,7 +141,7 @@ class Message {
     }
   }
 
-  static Future<Message?> getBookingById(String messageId) async {
+  static Future<Message?> getMessageById(String messageId) async {
     try {
       var result = await ApiClient.database.getDocument(
           databaseId: Config.DB_ID,
@@ -172,17 +172,19 @@ class Message {
     }
   }
 
-  static Future<Message?> updateBooking(String messageId,
+  static Future<Message?> updateMessage(String messageId,
       {String? propertyId,
       String? senderId,
       String? receiverId,
-      String? message}) async {
+      String? message,
+      bool? isRead}) async {
     try {
       //TODO: optimize this
       var updateJson = {};
       if (propertyId != null) updateJson['propertyId'] = propertyId;
       if (senderId != null) updateJson['senderId'] = senderId;
       if (receiverId != null) updateJson['receiverId'] = receiverId;
+      if (isRead != null) updateJson['isRead'] = isRead;
 
       if (message != null) updateJson['message'] = message;
 

@@ -39,31 +39,25 @@ class LoginRegisterForm extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+
               Text(
-                'Re',
+                'bnb',
                 style: TextStyle(
                     color: ColorPalette.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30),
-              ),
-              Text(
-                'vi',
-                style: TextStyle(
-                    color: ColorPalette.darkGrey,
                     fontWeight: FontWeight.normal,
                     fontSize: 30),
               ),
               Text(
-                'tail',
+                'scout',
                 style: TextStyle(
-                    color: ColorPalette.primary,
+                    color: ColorPalette.darkGrey,
                     fontWeight: FontWeight.bold,
                     fontSize: 30),
               ),
               Text(
-                'ize',
+                '24',
                 style: TextStyle(
-                    color: ColorPalette.darkGrey,
+                    color: ColorPalette.primary,
                     fontWeight: FontWeight.normal,
                     fontSize: 30),
               )

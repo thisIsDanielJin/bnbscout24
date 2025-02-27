@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bnbscout24/components/button.dart';
 import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/constants/sizes.dart';
@@ -55,7 +57,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                   decoration: BoxDecoration(
                       color: ColorPalette.lighterGrey,
                       borderRadius: BorderRadius.circular(Sizes.borderRadius)),
-                  child: Image.network(file.path),
+                  child: Image.file(File(file.path)),
                 ))
           ],
         ));

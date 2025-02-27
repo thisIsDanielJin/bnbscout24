@@ -4,6 +4,7 @@ import 'package:bnbscout24/components/date_input.dart';
 import 'package:bnbscout24/components/form_input.dart';
 import 'package:bnbscout24/components/custom_text_input.dart';
 import 'package:bnbscout24/components/image_picker_widget.dart';
+import 'package:bnbscout24/components/page_base.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/data/property.dart';
 import 'package:bnbscout24/utils/maps_api/maps_api.dart';
@@ -11,11 +12,10 @@ import 'package:bnbscout24/utils/maps_api/search_result.dart';
 import 'package:bnbscout24/utils/snackbar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nominatim_flutter/model/request/search_request.dart';
-import 'package:nominatim_flutter/nominatim_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
+import '../api/login_manager.dart';
 
 class CreatePropertyPage extends StatefulWidget {
   const CreatePropertyPage({super.key});
@@ -48,7 +48,7 @@ class _CreatePropertyPageState extends State<CreatePropertyPage> {
     setState(() {
       creating = true;
     });
-
+    final loginManager = Provider.of<LoginManager>(context, listen: false);
     try {
       int price = int.parse(priceController.text) * 100;
       double squareMeters = double.parse(areaController.text);
@@ -85,7 +85,7 @@ class _CreatePropertyPageState extends State<CreatePropertyPage> {
 
       Property property = Property(
           name: titleController.text,
-          userId: "Unknown",
+          userId: loginManager.loggedInUser!.$id,
           description: descriptionController.text,
           address: address.displayName,
           pictureIds: pictureIds,
@@ -114,29 +114,13 @@ class _CreatePropertyPageState extends State<CreatePropertyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            padding: EdgeInsets.all(
-                Sizes.paddingRegular),
+    return PageBase(
+      title: "Create Property",
+        child: Container(
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(spacing: Sizes.paddingSmall, children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: Sizes.paddingBig),
-                      child: Text(
-                        "Add Property",
-                        style: TextStyle(
-                            fontSize: Sizes.textSizeBig,
-                            fontWeight: FontWeight.bold),
-                      )),
-                ]),
                 Expanded(
                   child: SingleChildScrollView(
                       child: IntrinsicHeight(

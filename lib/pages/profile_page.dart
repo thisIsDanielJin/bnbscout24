@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:bnbscout24/pages/change_password_page.dart';
 import 'package:bnbscout24/pages/user_info_page.dart';
 
+import '../components/page_base.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -19,23 +21,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final loginManager = Provider.of<LoginManager>(context);
 
-    return SafeArea(
-        child: Scaffold(
-            body: Container(
-                padding: EdgeInsets.all(Sizes.paddingRegular),
+    return PageBase(
+                title: "Profile Settings",
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: Sizes.paddingRegular,
                     children: [
-                      Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: Sizes.paddingBig),
-                          child: Text(
-                            "Profile Settings",
-                            style: TextStyle(
-                                fontSize: Sizes.textSizeBig,
-                                fontWeight: FontWeight.bold),
-                          )),
-                      Column(spacing: Sizes.paddingRegular, children: [
                         SquareArrowButton(
                             text: "User Information",
                             onPressed: () {
@@ -70,24 +60,26 @@ class _ProfilePageState extends State<ProfilePage> {
                         SquareArrowButton(
                             text: "Logout",
                             onPressed: () => loginManager.logout()),
-                      ]),
+
                       if (!loginManager.isLandlord)
                         Expanded(
                             child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding:
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Padding(
+                                  padding:
                                   EdgeInsets.only(bottom: Sizes.paddingBig),
-                              child: SizedBox(
-                                  width: double.infinity,
-                                  child: ColorButton(
-                                      text: "Become a landlord",
-                                      onPressed: () =>
-                                          LoginManager.doLandlordUpgrade())),
-                            )
-                          ],
-                        ))
-                    ]))));
+                                  child: SizedBox(
+                                      width: double.infinity,
+                                      child: ColorButton(
+                                          text: "Become a landlord",
+                                          onPressed: () =>
+                                              LoginManager.doLandlordUpgrade())),
+                                )
+                              ],
+                            ))
+                    ]),
+
+                    );
   }
 }

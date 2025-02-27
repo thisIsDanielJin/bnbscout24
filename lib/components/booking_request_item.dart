@@ -133,6 +133,7 @@ class BookingRequestItem extends StatelessWidget {
               ],
             ),
           ) : Container(
+            padding: EdgeInsets.only(bottom: Sizes.paddingRegular),
             child: Text(status),
           ),
         ],

@@ -21,6 +21,7 @@ class PropertiesPage extends StatefulWidget {
 class _PropertiesPageState extends State<PropertiesPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  RealtimeSubscription? realtimeSubscription;
   List<Booking> bookingRequests = [];
   List<Property> ownedProperties = [];
   bool isLoading = true;
@@ -29,12 +30,22 @@ class _PropertiesPageState extends State<PropertiesPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _loadData();
+
+    Future.delayed(Duration.zero, () {
+      realtimeSubscription = Booking.subsribeBookings();
+
+      realtimeSubscription?.stream.listen((msg) {
+        _loadData();
+      });
+      _loadData();
+    });
+
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    realtimeSubscription?.close();
     super.dispose();
   }
 
@@ -98,7 +109,7 @@ class _PropertiesPageState extends State<PropertiesPage>
                       children: [
                         Text("Booking Requests"),
                         SizedBox(width: 4),
-                        if (bookingRequests.isNotEmpty)
+                        if (bookingRequests.where((br) => br.status == "booked").isNotEmpty)
                           Container(
                             padding: EdgeInsets.all(4),
                             decoration: BoxDecoration(
@@ -106,7 +117,7 @@ class _PropertiesPageState extends State<PropertiesPage>
                               shape: BoxShape.circle,
                             ),
                             child: Text(
-                              bookingRequests.length.toString(),
+                              bookingRequests.where((br) => br.status == "booked").length.toString(),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -135,14 +146,15 @@ class _PropertiesPageState extends State<PropertiesPage>
                         SizedBox(height: Sizes.paddingRegular),
                         // Add Property Button
                         InkWell(
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async{
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
                                     const CreatePropertyPage(),
                               ),
                             );
+                            await _loadData();
                           },
                           child: Container(
                             padding: EdgeInsets.all(Sizes.paddingRegular),

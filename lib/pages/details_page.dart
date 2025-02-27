@@ -88,7 +88,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             ));
             },
           ),
-          ColorButton(
+          if(widget.property.userId != loginManager.loggedInUser?.$id) ColorButton(
             text: "Book Now",
             onPressed: () {
               _showBookingBottomSheet(context);

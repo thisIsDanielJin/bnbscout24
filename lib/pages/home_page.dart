@@ -89,20 +89,16 @@ class _HomePageState extends State<HomePage> {
                     .toList();
 
                 return Container(
-                    padding: EdgeInsets.all(Sizes.paddingRegular),
-                    height: 300,
-                    width: 500,
                     decoration: BoxDecoration(
-                        color: ColorPalette.white,
-                        borderRadius:
-                            BorderRadius.circular(Sizes.borderRadius)),
-                    child: ListView(
-                        children: foundProps
-                            .map((p) => Container(
-                                  margin: EdgeInsets.only(
-                                      bottom: Sizes.paddingRegular),
-                                  child: PropertyCard(item: p,)))
-                            .toList()));
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                          children: foundProps
+                              .map((p) => Container(
+
+                              child: PropertyCard(item: p,)))
+                              .toList())),
+                    );
               })),
         )
       ],

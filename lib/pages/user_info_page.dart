@@ -3,6 +3,8 @@ import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/api/login_manager.dart';
 import 'package:provider/provider.dart';
 
+import '../components/page_base.dart';
+
 class UserInformationPage extends StatefulWidget {
   const UserInformationPage({super.key});
 
@@ -15,31 +17,12 @@ class _UserInformationPageState extends State<UserInformationPage> {
   Widget build(BuildContext context) {
     final loginManager = Provider.of<LoginManager>(context);
 
-    return SafeArea(
-        child: Scaffold(
-            body: Container(
-                padding: EdgeInsets.all(Sizes.paddingRegular),
+    return PageBase(
+                title: "Profile",
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: Sizes.paddingSmall,
                   children: [
-                    Row(spacing: Sizes.paddingSmall, children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: Sizes.paddingBig),
-                          child: Text(
-                            "Settings",
-                            style: TextStyle(
-                                fontSize: Sizes.textSizeBig,
-                                fontWeight: FontWeight.bold),
-                          )),
-                    ]),
                     Row(children: [
                       Text('User ID: ',
                           style: TextStyle(fontWeight: FontWeight.bold)),
@@ -62,6 +45,6 @@ class _UserInformationPageState extends State<UserInformationPage> {
                           loginManager.isLandlord ? 'Landlord' : 'Default User')
                     ]),
                   ],
-                ))));
+                ));
   }
 }

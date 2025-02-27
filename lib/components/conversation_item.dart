@@ -38,7 +38,7 @@ class ConversationItem extends StatelessWidget {
                 ClipRRect(
                   
                   borderRadius: BorderRadius.circular(Sizes.borderRadius),
-                  child: Image.network(imageUrl, width: 160),
+                  child: Image.network(imageUrl, width: 160, fit: BoxFit.cover),
                 ),
                 Expanded(
                   child: Container(

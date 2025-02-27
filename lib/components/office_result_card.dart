@@ -94,6 +94,7 @@ class HorizontalCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       streetName,
+                      maxLines: 2,
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,

@@ -7,14 +7,17 @@ import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/data/message.dart';
 import 'package:bnbscout24/data/property.dart';
+import 'package:bnbscout24/pages/conversations_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ConversationPage extends StatefulWidget {
   final Property property;
+  final String chatPartnerId;
 
-  const ConversationPage({super.key, required this.property});
+  const ConversationPage({super.key, required this.property, required this.chatPartnerId});
 
   @override
   State<ConversationPage> createState() => _ConversationPageState();
@@ -22,7 +25,6 @@ class ConversationPage extends StatefulWidget {
 
 class _ConversationPageState extends State<ConversationPage> {
   RealtimeSubscription? realtimeSubscription;
-  String? chatPartnerId;
   List<Message> messages = [];
   TextEditingController messageController = TextEditingController();
 
@@ -49,30 +51,26 @@ class _ConversationPageState extends State<ConversationPage> {
   void loadData() async {
     final loginManager = Provider.of<LoginManager>(context, listen: false);
     
-    List<Message>? messages = await Message.listMessages(userId: loginManager.loggedInUser?.$id, propertyId: widget.property.id);
-    print(messages?.length);
-    String chatPartnerId;
-    if (messages != null) {
-      if (loginManager.loggedInUser?.$id == widget.property.userId) {
-        // If we are the property owner, we have to find the user id of our chat partner, bc mistake
-        chatPartnerId = messages.firstWhere((msg) => msg.receiverId == loginManager.loggedInUser?.$id).senderId;
-      }
-      else {
-        chatPartnerId = widget.property.userId;
-        print("Property Owner: ${chatPartnerId}  bc ${loginManager.loggedInUser?.$id} == ${widget.property.id}");
-      }
-      
-      setState(() {
-        this.messages = messages;
-        this.chatPartnerId = chatPartnerId;
-      });
-    }
+    List<MessageConversation>? convo = await Message.listMessageConverstations(userId: loginManager.loggedInUser?.$id, propertyId: widget.property.id, partnerId: widget.chatPartnerId);
+
+    List<Message> msgs = convo!.first.messages;
+
+    // Add all message IDs to shared prefs as read!
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Set<String> readIds = prefs.getStringList(Message.KEY_MESSAGE_READ_IDS)?.toSet() ?? Set();
+    readIds.addAll(msgs.map((msg) => msg.id));
+    prefs.setStringList(Message.KEY_MESSAGE_READ_IDS, readIds.toList());
+
+    setState(() {
+      messages = msgs;
+    });
+    
   }
   @override
   Widget build(BuildContext context) {
     final loginManager = Provider.of<LoginManager>(context);
 
-    return PageBase(title: "Conversation", child: Column(
+    return PageBase(title: "Conversation - ${widget.property.name}", child: Column(
       spacing: Sizes.paddingSmall,
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -113,8 +111,8 @@ class _ConversationPageState extends State<ConversationPage> {
           Expanded(child: CustomTextInput(
             controller: messageController,
           )),
-          PrimaryButton(text: "Send!", onPressed: () {
-            Message newMessage = Message(propertyId: widget.property.id, senderId: loginManager.loggedInUser!.$id, receiverId: chatPartnerId!, message: messageController.text, created: DateTime.now());
+          ColorButton(text: "Send!", onPressed: () {
+            Message newMessage = Message(propertyId: widget.property.id, senderId: loginManager.loggedInUser!.$id, receiverId: widget.chatPartnerId!, message: messageController.text, created: DateTime.now());
             Message.createMessage(newMessage);
             messageController.clear();
           })

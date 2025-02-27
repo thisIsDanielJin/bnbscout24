@@ -2,18 +2,19 @@ import 'package:bnbscout24/constants/constants.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
-class PrimaryButton extends StatelessWidget {
+class ColorButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
+  final Color? color;
 
-  const PrimaryButton({super.key, required this.text, required this.onPressed});
+  const ColorButton({super.key, required this.text, required this.onPressed, this.color});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorPalette.primary,
+        backgroundColor: color ?? ColorPalette.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(40),
         ),

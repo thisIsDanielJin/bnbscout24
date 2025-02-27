@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/components/button.dart';
 import 'package:bnbscout24/api/login_manager.dart';
+import 'package:bnbscout24/components/custom_text_input.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -42,51 +43,21 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         )),
                   ]),
                   Column(spacing: Sizes.paddingRegular, children: [
-                    TextField(
-                      controller: oldPasswordController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter Old Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
-                    TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter New Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
-                    TextField(
-                      controller: confirmPasswordController,
-                      decoration: InputDecoration(
-                        hintText: 'Confirm New Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
+                    CustomTextInput(
+                        controller: oldPasswordController,
+                        hint: 'Enter Old Password',
+                        obscureText: true),
+                    CustomTextInput(
+                        controller: passwordController,
+                        hint: 'Enter New Password',
+                        obscureText: true),
+                    CustomTextInput(
+                        controller: confirmPasswordController,
+                        hint: 'Confirm New Password',
+                        obscureText: true),
                     SizedBox(
                         width: double.infinity,
-                        child: PrimaryButton(
+                        child: ColorButton(
                             text: "Change Password",
                             onPressed: () {
                               if (passwordController.text !=

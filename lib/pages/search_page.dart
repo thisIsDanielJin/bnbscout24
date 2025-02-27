@@ -1,12 +1,8 @@
-import 'dart:convert';
 import 'package:bnbscout24/components/custom_text_input.dart';
-import 'package:bnbscout24/constants/constants.dart';
+import 'package:bnbscout24/components/property_card.dart';
 import 'package:bnbscout24/data/booking.dart';
 import 'package:bnbscout24/data/property.dart';
-import 'package:bnbscout24/pages/details_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:bnbscout24/components/office_result_card.dart';
 import 'package:bnbscout24/pages/filter_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -264,36 +260,26 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        flex: 1,
-                        child: TextField(
-                          controller: _radiusController,
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              double? radius = double.tryParse(value);
-                              if (radius == null || radius < 0) {
-                                _radiusController.text = '';
-                              } else {
-                                _performFilterAndSearch();
+                          flex: 1,
+                          child: CustomTextInput(
+                            controller: _radiusController,
+                            hint: 'Radius (km)',
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                double? radius = double.tryParse(value);
+                                if (radius == null || radius < 0) {
+                                  _radiusController.text = '';
+                                } else {
+                                  _performFilterAndSearch();
+                                }
                               }
-                            }
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Radius (km)',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
+                            },
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.my_location),
                               onPressed: _getCurrentLocation,
                             ),
-                          ),
-                        ),
-                      ),
+                          )),
                     ],
                   ),
                   if (_currentPosition != null)
@@ -319,59 +305,8 @@ class _SearchPageState extends State<SearchPage> {
                       : ListView.builder(
                           padding: const EdgeInsets.all(8.0),
                           itemCount: _filteredCardData?.length,
-                          itemBuilder: (context, index) {
-                            final item = _filteredCardData?[index];
-                            return Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => DetailsPage(
-                                              priceInterval: item.priceInterval,
-                                              propertyId: item.id,
-                                              pictureIds: item
-                                                      .pictureIds!.isNotEmpty
-                                                  ? Property.generateImageUrls(
-                                                      item)
-                                                  : [],
-                                              title: item.name.toString() ?? '',
-                                              rentPerDay:
-                                                  item.priceIntervalCents ?? 0,
-                                              description:
-                                                  item.description ?? '',
-                                              street:
-                                                  item.address.toString() ?? '',
-                                              area: item.squareMetres.toInt() ??
-                                                  0,
-                                              deskAmount:
-                                                  item.roomAmount.toInt() ?? 0,
-                                              networkSpeed:
-                                                  item.mbitPerSecond?.toInt() ??
-                                                      0)),
-                                    );
-                                  },
-                                  child: HorizontalCard(
-                                    priceInterval: item!.priceInterval,
-                                    imageUrl: item.pictureIds!.isNotEmpty
-                                        ? Property.generateImageUrls(item)
-                                            ?.elementAt(0)
-                                        : Constants.unknownImageUrl,
-                                    title: item.name.toString() ?? '',
-                                    pricePerMonth: item.priceIntervalCents ?? 0,
-                                    streetName: item.address.toString() ?? '',
-                                    area: item.squareMetres.toInt() ?? 0,
-                                    deskAmount: item.roomAmount.toInt() ?? 0,
-                                    networkSpeed:
-                                        item.mbitPerSecond?.toInt() ?? 0,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          },
-                        ),
+                          itemBuilder: (context, index) =>
+                              PropertyCard(item: _filteredCardData![index])),
             ),
           ],
         ),

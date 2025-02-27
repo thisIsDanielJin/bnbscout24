@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:bnbscout24/components/property_card.dart';
 import 'package:bnbscout24/pages/create_property.dart';
 import 'package:flutter/material.dart';
 import 'package:bnbscout24/constants/sizes.dart';
@@ -21,13 +22,14 @@ class _PropertiesPageState extends State<PropertiesPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Booking> bookingRequests = [];
+  List<Property> ownedProperties = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _loadBookingRequests();
+    _loadData();
   }
 
   @override
@@ -36,43 +38,22 @@ class _PropertiesPageState extends State<PropertiesPage>
     super.dispose();
   }
 
-  Future<void> _loadBookingRequests() async {
+  Future<void> _loadData() async {
     setState(() => isLoading = true);
     try {
       final loginManager = Provider.of<LoginManager>(context, listen: false);
 
-      // First get a list of your properties to use a valid property ID
+
       List<Property>? properties = await Property.listProperties();
-      if (properties == null || properties.isEmpty) {
-        setState(() {
-          bookingRequests = [];
-          isLoading = false;
-        });
-        return;
-      }
+      properties = properties?.where((p) => p.userId == loginManager.loggedInUser!.$id).toList();
 
-      // Create mock bookings with valid property ID
-      final mockBookings = [
-        Booking(
-          id: ID.unique(),
-          propertyId: properties.first.id, // Use actual property ID
-          userId: loginManager.loggedInUser!.$id,
-          status: "pending",
-          startDate: DateTime.now(),
-          endDate: DateTime.now().add(Duration(days: 3)),
-        ),
-        Booking(
-          id: ID.unique(),
-          propertyId: properties.first.id, // Use actual property ID
-          userId: loginManager.loggedInUser!.$id,
-          status: "pending",
-          startDate: DateTime.now().add(Duration(days: 7)),
-          endDate: DateTime.now().add(Duration(days: 10)),
-        ),
-      ];
-
+      List<Booking>? bookings = await Booking.listBookings();
+      bookings = bookings?.where((b) => (properties?.map((p) => p.id).contains(b.propertyId) ?? false)).toList();
+      
       setState(() {
-        bookingRequests = mockBookings;
+        bookingRequests = bookings ?? [];
+        ownedProperties = properties ?? [];
+        isLoading = false;
       });
     } catch (e) {
       debugPrint('Error loading booking requests: $e');
@@ -81,10 +62,10 @@ class _PropertiesPageState extends State<PropertiesPage>
     }
   }
 
-  Future<void> _handleBookingAction(Booking booking, String status) async {
+  Future<void>  _handleBookingAction(Booking booking, String status) async {
     try {
       await Booking.updateBooking(booking.id, status: status);
-      _loadBookingRequests(); // Reload the list
+      _loadData(); // Reload the list
     } catch (e) {
       debugPrint('Error updating booking: $e');
     }
@@ -148,18 +129,9 @@ class _PropertiesPageState extends State<PropertiesPage>
                     ListView(
                       children: [
                         SizedBox(height: Sizes.paddingRegular),
-                        // Your property cards would go here
-                        // Example card:
-                        HorizontalCard(
-                          imageUrl: "your_image_url",
-                          title: "Generic Office Space",
-                          streetName: "Hauptstraße 1",
-                          area: 150,
-                          deskAmount: 25,
-                          networkSpeed: 10000,
-                          pricePerMonth: 1800,
-                          priceInterval: "Monthly",
-                        ),
+         
+                        ...ownedProperties.map((p) => PropertyCard(item: p)),
+                      
                         SizedBox(height: Sizes.paddingRegular),
                         // Add Property Button
                         InkWell(
@@ -199,16 +171,10 @@ class _PropertiesPageState extends State<PropertiesPage>
                             itemCount: bookingRequests.length,
                             itemBuilder: (context, index) {
                               final booking = bookingRequests[index];
-                              return FutureBuilder<Property?>(
-                                future: Property.getPropertyById(
-                                    booking.propertyId),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return SizedBox.shrink();
-                                  }
-                                  final property = snapshot.data!;
-                                  return BookingRequestItem(
+                              final property = ownedProperties.firstWhere((p) => p.id == booking.propertyId);
+                              return BookingRequestItem(
                                     title: property.name,
+                                    status: booking.status,
                                     imageUrl: property.pictureIds?.isNotEmpty ==
                                             true
                                         ? Property.generateImageUrls(property)!
@@ -218,13 +184,13 @@ class _PropertiesPageState extends State<PropertiesPage>
                                         booking.startDate ?? DateTime.now(),
                                     endDate: booking.endDate ?? DateTime.now(),
                                     onAccept: () => _handleBookingAction(
-                                        booking, "accepted"),
+                                        booking, "approved"),
                                     onDecline: () => _handleBookingAction(
                                         booking, "declined"),
                                   );
                                 },
-                              );
-                            },
+                              
+                            
                           ),
                   ],
                 ),

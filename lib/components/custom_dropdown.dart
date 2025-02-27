@@ -14,25 +14,22 @@ class CustomDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(Sizes.borderRadius),
-      child: Container(
-        color: ColorPalette.lightGrey,
-        child:  ButtonTheme(
-          
-          alignedDropdown: true,
-          child: DropdownButton(
-            borderRadius: BorderRadius.circular(Sizes.borderRadius),
-            items: items,
-            onChanged: onChanged,
-            value: value,
-            isExpanded: true,
-      ),
-          
-        )
-     
-    )
-    
-    );
-    
+        borderRadius: BorderRadius.circular(Sizes.borderRadius),
+        child: Container(
+            padding: EdgeInsets.all(3),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(Sizes.borderRadius)),
+            child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButton(
+                underline: SizedBox(),
+                borderRadius: BorderRadius.circular(Sizes.borderRadius),
+                items: items,
+                onChanged: onChanged,
+                value: value,
+                isExpanded: true,
+              ),
+            )));
   }
 }

@@ -254,7 +254,7 @@ class _CreatePropertyPageState extends State<CreatePropertyPage> {
                     )
                     : SizedBox(
                         width: double.infinity,
-                        child: PrimaryButton(
+                        child: ColorButton(
                             text: "Create Property", onPressed: createProperty)),
               ],
             )));

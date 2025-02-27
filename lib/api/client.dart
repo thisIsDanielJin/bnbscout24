@@ -1,13 +1,13 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/realtime_browser.dart';
+import 'package:bnbscout24/constants/config.dart';
 
 class ApiClient {
   Client get _client {
     Client client = Client();
 
     client
-        .setEndpoint('https://god-did.de/v1')
-        .setProject('6780ee1a896fed0b8da7')
+        .setEndpoint(Config.API_BASE_URL)
+        .setProject(Config.PROJECT_ID)
         .setSelfSigned();
 
     return client;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bnbscout24/components/button.dart';
 import 'package:bnbscout24/constants/sizes.dart';
 import 'package:bnbscout24/constants/constants.dart';
+import 'package:bnbscout24/components/custom_text_input.dart';
 
 class LoginRegisterForm extends StatelessWidget {
   final String buttonText;
@@ -68,73 +69,29 @@ class LoginRegisterForm extends StatelessWidget {
               )
             ]),
             SizedBox(height: Sizes.paddingBig),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                hintText: 'Enter email',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-            ),
+            CustomTextInput(controller: emailController, hint: 'Enter email'),
             if (showExtraFields)
               Column(children: [
                 SizedBox(height: Sizes.paddingRegular),
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
-                ),
+                CustomTextInput(controller: nameController, hint: 'Enter name')
               ]),
             SizedBox(height: Sizes.paddingRegular),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(
-                hintText: 'Enter Password',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              obscureText: true,
-            ),
+            CustomTextInput(
+                controller: passwordController,
+                hint: 'Enter password',
+                obscureText: true),
             if (showExtraFields)
               Column(children: [
                 SizedBox(height: Sizes.paddingRegular),
-                TextField(
-                  controller: confirmPasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Confirm Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
-                  obscureText: true,
-                ),
+                CustomTextInput(
+                    controller: confirmPasswordController,
+                    hint: 'Confirm password',
+                    obscureText: true),
               ]),
             SizedBox(height: Sizes.paddingBig),
             SizedBox(
               width: double.infinity,
-              child: PrimaryButton(
+              child: ColorButton(
                   text: buttonText,
                   onPressed: () {
                     onSubmit(emailController.text, passwordController.text,

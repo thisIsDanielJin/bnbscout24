@@ -5,7 +5,7 @@ class HorizontalCard extends StatelessWidget {
   final String priceInterval;
   final String? imageUrl;
   final String title;
-  final int pricePerMonth;
+  final int pricePerIntervalCents;
   final String streetName;
   final int area;
   final int deskAmount;
@@ -16,7 +16,7 @@ class HorizontalCard extends StatelessWidget {
     required this.priceInterval,
     required this.imageUrl,
     required this.title,
-    required this.pricePerMonth,
+    required this.pricePerIntervalCents,
     required this.streetName,
     required this.area,
     required this.deskAmount,
@@ -127,7 +127,7 @@ class HorizontalCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '€${pricePerMonth.toString()}',
+                            '€${(pricePerIntervalCents / 100.0).toString()}',
                             style: const TextStyle(
                               fontSize: 18,
                               color: Colors.black,

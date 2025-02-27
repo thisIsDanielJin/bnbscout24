@@ -36,6 +36,13 @@ class _SearchPageState extends State<SearchPage> {
     _addressController.addListener(() {
       _performFilterAndSearch();
     });
+
+    // Add listener to radius controller
+    _radiusController.addListener(() {
+      if (_currentPosition != null) {
+        _performFilterAndSearch();
+      }
+    });
   }
 
   @override
@@ -122,49 +129,91 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   List<Property>? _performSearch(List<Property>? input) {
-    return input?.where((item) {
-      final streetName = item.address.toString().toLowerCase();
-      final title = item.name.toString().toLowerCase();
+    if (input == null) return null;
+
+    List<Property> results = input;
+
+    // Apply text search if there's a search term
+    if (_addressController.text.isNotEmpty) {
       final searchTerm = _addressController.text.toLowerCase();
+      results = results.where((item) {
+        final streetName = item.address.toString().toLowerCase();
+        final title = item.name.toString().toLowerCase();
+        return streetName.contains(searchTerm) || title.contains(searchTerm);
+      }).toList();
+    }
 
-      // Basic text search
-      bool matchesSearch =
-          streetName.contains(searchTerm) || title.contains(searchTerm);
-
-      // Radius check if position and radius are available
-      if (matchesSearch &&
-          _currentPosition != null &&
-          _radiusController.text.isNotEmpty) {
-        final itemLat = item.geoLat ?? 0.0;
-        final itemLng = item.geoLon ?? 0.0;
-        final distance = Geolocator.distanceBetween(
-          _currentPosition!.latitude,
-          _currentPosition!.longitude,
-          itemLat,
-          itemLng,
-        );
-        // Convert radius from km to meters
+    // Apply radius filter if location and radius are available
+    if (_currentPosition != null && _radiusController.text.isNotEmpty) {
+      try {
         final radiusInMeters = double.parse(_radiusController.text) * 1000;
-        return distance <= radiusInMeters;
+        results = results.where((item) {
+          final itemLat = item.geoLat ?? 0.0;
+          final itemLng = item.geoLon ?? 0.0;
+          final distance = Geolocator.distanceBetween(
+            _currentPosition!.latitude,
+            _currentPosition!.longitude,
+            itemLat,
+            itemLng,
+          );
+          return distance <= radiusInMeters;
+        }).toList();
+      } catch (e) {
+        print('Error parsing radius: $e');
       }
+    }
 
-      return matchesSearch;
-    }).toList();
+    return results;
   }
 
   void _performFilterAndSearch() async {
     List<Property>? filteredData = await _performFilter(cardData);
-
-    if (_addressController.text.isEmpty) {
-      setState(() {
-        _filteredCardData = filteredData;
-      });
-      return;
-    }
-
     setState(() {
       _filteredCardData = _performSearch(filteredData);
     });
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      // Check location permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Handle denied permission
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission denied')),
+          );
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        // Handle permanently denied permission
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Location permission permanently denied. Please enable it in settings.'),
+          ),
+        );
+        return;
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      setState(() {
+        _currentPosition = position;
+      });
+
+      // Trigger search with new position
+      _performFilterAndSearch();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error getting location: $e')),
+      );
+    }
   }
 
   @override
@@ -219,6 +268,16 @@ class _SearchPageState extends State<SearchPage> {
                         child: TextField(
                           controller: _radiusController,
                           keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            if (value.isNotEmpty) {
+                              double? radius = double.tryParse(value);
+                              if (radius == null || radius < 0) {
+                                _radiusController.text = '';
+                              } else {
+                                _performFilterAndSearch();
+                              }
+                            }
+                          },
                           decoration: InputDecoration(
                             hintText: 'Radius (km)',
                             border: OutlineInputBorder(
@@ -230,8 +289,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.my_location),
-                              onPressed:
-                                  () {}, // Empty function - button does nothing
+                              onPressed: _getCurrentLocation,
                             ),
                           ),
                         ),
